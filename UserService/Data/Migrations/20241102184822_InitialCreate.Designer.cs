@@ -7,10 +7,10 @@ using UserService.Data;
 
 #nullable disable
 
-namespace UserService.Migrations
+namespace UserService.Data.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20241102124928_InitialCreate")]
+    [Migration("20241102184822_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,9 +37,13 @@ namespace UserService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("BLOB");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("Role")
                         .IsRequired()

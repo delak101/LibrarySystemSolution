@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace UserService.Migrations
+namespace UserService.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -18,7 +18,8 @@ namespace UserService.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "BLOB", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "BLOB", nullable: false),
                     Role = table.Column<string>(type: "TEXT", nullable: false),
                     Department = table.Column<string>(type: "TEXT", nullable: false)
                 },

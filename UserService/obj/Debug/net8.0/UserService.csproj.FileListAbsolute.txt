@@ -157,3 +157,13 @@ C:\Users\Delak\RiderProjects\LibrarySystemSolution\userservice\bin\Debug\net8.0\
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\userservice\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\userservice\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\userservice\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.Bcl.TimeProvider.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\obj\Debug\net8.0\UserService.sourcelink.json

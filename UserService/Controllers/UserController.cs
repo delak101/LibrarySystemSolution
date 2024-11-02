@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserService.Data;
 using UserService.DTOs;
 using UserService.Models;
 using UserService.Services;
@@ -6,30 +7,59 @@ using UserService.Services;
 namespace UserService.Controllers;
 
 [ApiController]
-[Microsoft.AspNetCore.Components.Route("api/[controller]")]
-public class UserController : ControllerBase
+[Route("api/[controller]")]
+public class UserController(UserContext context, IUserService userService, ITokenService tokenService)
+    : ControllerBase
 {
-    
-    private readonly IUserService _userService;
-    public UserController(IUserService userService)
-    {
-        _userService = userService;
-    }
+    private readonly UserContext _context = context; // Store the UserContext
+    private readonly ITokenService _tokenService = tokenService; // Store the token service
 
-    [HttpPost("register")]
+    [HttpPost("register")] // POST : user/register
     public async Task<ActionResult<User>> Register(RegisterDto registerDto)
     {
-        var result = await _userService.RegisterAsync(registerDto);
+        var result = await userService.RegisterAsync(registerDto);
         if (!result) 
             return BadRequest("User already exists or registration failed.");
     
         return Ok("User registered successfully.");
     }
 
-    [HttpPost("login")]
+    [HttpPost("login")] // POST : user/login
     public async Task<ActionResult<User>> Login(LoginDto loginDto)
     {
-        var token = await _userService.LoginAsync(loginDto);
-        return token != null ? Ok(new { Token = token }) : Unauthorized("Invalid credentials");
+        var token = await userService.LoginAsync(loginDto);
+        if (token == null) 
+            return Unauthorized("Invalid email or password");
+    
+        return Ok(new { Token = token });
     }
+    
+    [HttpGet("profile/{userId}")] // GET findUser user/profile/{userId}
+    public async Task<ActionResult<UserDto>> GetUserProfile(int userId)
+    {
+        var user = await userService.GetUserProfileAsync(userId);
+        if (user == null) return NotFound("User not found");
+        
+        return Ok(user);
+    }
+
+    [HttpPut("profile/{userId}")] // PUT editUser user/profile/{userId}
+    public async Task<IActionResult> UpdateUserProfile(int userId, UpdateUserDto updateUserDto)
+    {
+        var result = await userService.UpdateUserProfileAsync(userId, updateUserDto);
+        if (!result) return NotFound("User not found or update failed");
+        
+        return NoContent();
+    }
+    
+    [HttpDelete("profile/{userId}")] // DELETE deleteUser user/profile/{userId}
+    public async Task<IActionResult> DeleteUser(int userId)
+    {
+        var result = await userService.DeleteUserAsync(userId);
+        if (!result) return NotFound("User not found");
+
+        return NoContent();
+    }
+
+
 }

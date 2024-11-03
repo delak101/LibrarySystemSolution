@@ -167,3 +167,4 @@ C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\obj\Debug\net8.0\UserService.sourcelink.json
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\UserService\bin\Debug\net8.0\BCrypt.Net-Next.dll

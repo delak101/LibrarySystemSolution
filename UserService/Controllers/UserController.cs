@@ -60,6 +60,4 @@ public class UserController(UserContext context, IUserService userService, IToke
 
         return NoContent();
     }
-
-
 }

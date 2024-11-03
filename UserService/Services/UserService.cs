@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using UserService.DTOs;
 using UserService.Models;
 using UserService.Repositories;
-
+using BCrypt.Net;
 namespace UserService.Services;
 
 public class UserService : IUserService
@@ -27,7 +27,10 @@ public class UserService : IUserService
         
         if (existingUser != null) return false; // User already exists
         
-        using var hmac = new HMACSHA3_512();
+        // using var hmac = new HMACSHA3_512();
+        var salt = BCrypt.Net.BCrypt.GenerateSalt();
+        var hashPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password, salt);
+
         
         var user = new User
         {
@@ -35,8 +38,10 @@ public class UserService : IUserService
             Email = registerDto.Email,
             Role = registerDto.Role,
             Department = registerDto.Department,
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            PasswordSalt = hmac.Key //I'll use this key in the login to hash the entered password and compare "hashedPasswords"
+            // PasswordSalt = hmac.Key //I'll use this key in the login to hash the entered password and compare "hashedPasswords"
+            // PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
+            PasswordSalt = salt,
+            PasswordHash = hashPassword
         };
         await _userRepository.AddUserAsync(user);
         
@@ -48,13 +53,16 @@ public class UserService : IUserService
         var user = await _userRepository.GetUserByEmailAsync(loginDto.Email.ToLower());
         if (user == null) return null; // User not found
 
-        using var hmac = new HMACSHA512(user.PasswordSalt);
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+        // using var hmac = new HMACSHA512(user.PasswordSalt);
+        // var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
 
         // Validate hashed password
-        for (int i = 0; i < computedHash.Length; i++)
-            if (computedHash[i] != user.PasswordHash[i])
-                return null; // Incorrect password
+        // for (int i = 0; i < computedHash.Length; i++)
+        //     if (computedHash[i] != user.PasswordHash[i])
+        //         return null; // Incorrect password
+
+        var isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+        if (!isPasswordValid) return null; // Incorrect password
 
         // Generate and return JWT token
         return _tokenService.CreateToken(user);

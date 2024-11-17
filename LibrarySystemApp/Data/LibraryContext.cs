@@ -10,6 +10,15 @@ public class LibraryContext(DbContextOptions options) : DbContext(options)
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+        modelBuilder.Entity<User>()
+            .Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(256) // Ensures compatibility with SQL Server
+            .HasColumnType("nvarchar(256)"); // Explicitly set the column type
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
     }
 }

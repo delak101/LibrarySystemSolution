@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<LibraryContext>(opt => 
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING"));
 });
 
 // Add Authorization Services

@@ -7,7 +7,7 @@ namespace LibrarySystemApp.Services;
 
 public class BookService(IBookRepository bookRepository) : IBookService
 {
-    public async Task<ActionResult<Book>> AddBookAsync(BookDto bookDto)
+    public async Task<Book> AddBookAsync(BookDto bookDto)
     {
         var book = new Book
         {
@@ -21,17 +21,7 @@ public class BookService(IBookRepository bookRepository) : IBookService
         };
         await bookRepository.AddBookAsync(book);
 
-        return new Book
-        {
-            Id = book.Id,
-            Name = book.Name,
-            Author = book.Author,
-            Description = book.Description,
-            Shelf = book.Shelf,
-            State = book.State,
-            Department = book.Department,
-            Year = book.Year
-        };
+        return book;
     }
 
     public async Task<BookResponseDto> GetBookByIdAsync(int bookId)

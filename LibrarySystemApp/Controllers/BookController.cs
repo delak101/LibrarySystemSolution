@@ -11,7 +11,7 @@ namespace LibrarySystemApp.Controllers;
 public class BookController(IBookService bookService) : ControllerBase
 {
     [HttpPost("addBook")] // POST: api/book/addBook
-    public async Task<ActionResult<BookResponseDto>> AddBook(BookDto bookDto)
+    public async Task<IActionResult> AddBook(BookDto bookDto)
     {
         var addedBook = await bookService.AddBookAsync(bookDto);
         if (addedBook == null)

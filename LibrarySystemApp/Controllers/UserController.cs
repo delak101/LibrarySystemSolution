@@ -43,7 +43,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     }
     
     // [Authorize(policy:"AdminOnly")]
-    [HttpGet("profile/{userId}")] // GET findUser user/profile/{userId}
+    [HttpGet("profile/search/{userId}")] // GET findUser user/profile/{userId}
     public async Task<ActionResult<UserDto>> GetUserProfile(int userId)
     {
         var user = await userService.GetUserProfileAsync(userId);
@@ -52,7 +52,7 @@ public class UserController(IUserService userService, ITokenService tokenService
         return Ok(user);
     }
 
-    [HttpPut("profile/{userId}")] // PUT editUser user/profile/{userId}
+    [HttpPut("profile/update/{userId}")] // PUT editUser user/profile/{userId}
     public async Task<IActionResult> UpdateUserProfile(int userId, UpdateUserDto updateUserDto)
     {
         var updatedUser = await userService.UpdateUserProfileAsync(userId, updateUserDto);
@@ -61,7 +61,7 @@ public class UserController(IUserService userService, ITokenService tokenService
         return Ok(updatedUser);
     }
     // [Authorize(policy:"AdminOnly")]
-    [HttpDelete("profile/{userId}")] // DELETE deleteUser user/profile/{userId}
+    [HttpDelete("profile/delete/{userId}")] // DELETE deleteUser user/profile/{userId}
     public async Task<IActionResult> DeleteUser(int userId)
     {
         var result = await userService.DeleteUserAsync(userId);

@@ -20,7 +20,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return Ok("Book Added Successfully");
     }
     
-    [HttpGet("{bookId}")] // GET: api/book/{bookId}
+    [HttpGet("search/{bookId}")] // GET: api/book/{bookId}
     public async Task<ActionResult<BookResponseDto>> GetBookById(int bookId)
     {
         var book = await bookService.GetBookByIdAsync(bookId);
@@ -30,7 +30,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return Ok(book);
     }
 
-    [HttpGet("all")] // GET: api/book/all
+    [HttpGet("allbooks")] // GET: api/book/all
     public async Task<ActionResult<List<BookResponseDto>>> GetAllBooks()
     {
         var books = await bookService.GetAllBooksAsync();

@@ -37,7 +37,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return Ok(books);
     }
 
-    [HttpPut("{bookId}")] // PUT: api/book/{bookId}
+    [HttpPut("update/{bookId}")] // PUT: api/book/update/{bookId}
     public async Task<ActionResult<BookResponseDto>> UpdateBook(int bookId, BookDto bookDto)
     {
         var updatedBook = await bookService.UpdateBookAsync(bookId, bookDto);
@@ -47,7 +47,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return Ok("Book Updated Successfully");
     }
 
-    [HttpDelete("{bookId}")] // DELETE: api/book/{bookId}
+    [HttpDelete("delete/{bookId}")] // DELETE: api/book/delete/{bookId}
     public async Task<IActionResult> DeleteBook(int bookId)
     {
         var result = await bookService.DeleteBookAsync(bookId);

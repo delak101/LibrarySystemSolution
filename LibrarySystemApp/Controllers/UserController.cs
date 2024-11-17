@@ -13,12 +13,23 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpPost("register")] // POST : user/register
     public async Task<ActionResult<User>> Register(RegisterDto registerDto)
     {
-        var registeredUser  = await userService.RegisterAsync(registerDto);
-        if (!registeredUser) 
-            return BadRequest("User already exists or registration failed.");
+        try
+        {
+            var registeredUser = await userService.RegisterAsync(registerDto);
+            if (!registeredUser)
+            {
+                return BadRequest(new { Message = "User already exists or registration failed." });
+            }
+            return Ok(new { Message = "User registered successfully." });
+        }
+        catch (Exception ex)
+        {
+            // Log exception
+            return StatusCode(500, new { Message = "An internal server error occurred.", Details = ex.Message });
+        }
     
         //"User registered successfully."
-        return Ok("User registered successfully.");
+        return Ok(new { Message = "User registered successfully." });
     }
 
     [HttpPost("login")] // POST : user/login

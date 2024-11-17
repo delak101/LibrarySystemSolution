@@ -1,9 +1,6 @@
-﻿using LibrarySystemApp.Data;
-using LibrarySystemApp.DTOs;
+﻿using LibrarySystemApp.DTOs;
 using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
-using LibrarySystemApp.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystemApp.Controllers;
@@ -21,11 +18,11 @@ public class UserController(IUserService userService, ITokenService tokenService
             return BadRequest("User already exists or registration failed.");
     
         //"User registered successfully."
-        return Ok(registeredUser);
+        return Ok(new { Message = "User registered successfully." });
     }
 
     [HttpPost("login")] // POST : user/login
-    public async Task<ActionResult<User>> Login(LoginDto loginDto)
+    public async Task<IActionResult> Login(LoginDto loginDto)
     {
         var token = await userService.LoginAsync(loginDto);
         if (token == null) 

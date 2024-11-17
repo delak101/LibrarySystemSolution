@@ -18,7 +18,7 @@ public class UserController(IUserService userService, ITokenService tokenService
             return BadRequest("User already exists or registration failed.");
     
         //"User registered successfully."
-        return Ok(new { Message = "User registered successfully." });
+        return Ok("User registered successfully.");
     }
 
     [HttpPost("login")] // POST : user/login

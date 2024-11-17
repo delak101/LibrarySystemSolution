@@ -1,12 +1,13 @@
 ﻿using LibrarySystemApp.DTOs;
 using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystemApp.Services;
 
 public class BookService(IBookRepository bookRepository) : IBookService
 {
-    public async Task<BookResponseDto> AddBookAsync(BookDto bookDto)
+    public async Task<ActionResult<Book>> AddBookAsync(BookDto bookDto)
     {
         var book = new Book
         {
@@ -20,7 +21,7 @@ public class BookService(IBookRepository bookRepository) : IBookService
         };
         await bookRepository.AddBookAsync(book);
 
-        return new BookResponseDto
+        return new Book
         {
             Id = book.Id,
             Name = book.Name,

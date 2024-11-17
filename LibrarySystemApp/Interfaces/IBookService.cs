@@ -1,11 +1,12 @@
 ﻿using LibrarySystemApp.DTOs;
 using LibrarySystemApp.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystemApp.Interfaces;
 
 public interface IBookService
 {
-    Task<BookResponseDto> AddBookAsync(BookDto bookDto);
+    Task<ActionResult<Book>> AddBookAsync(BookDto bookDto);
     Task<BookResponseDto> GetBookByIdAsync(int bookId);
     Task<IEnumerable<BookResponseDto>> GetAllBooksAsync();
     Task<BookResponseDto> UpdateBookAsync(int bookId, BookDto bookDto);

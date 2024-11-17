@@ -17,7 +17,7 @@ public class BookController(IBookService bookService) : ControllerBase
         if (addedBook == null)
             return BadRequest("Failed to add the book.");
 
-        return Ok(addedBook);
+        return Ok("Book Added Successfully");
     }
     
     [HttpGet("{bookId}")] // GET: api/book/{bookId}
@@ -44,7 +44,7 @@ public class BookController(IBookService bookService) : ControllerBase
         if (updatedBook == null)
             return NotFound("Book not found or update failed.");
 
-        return Ok(updatedBook);
+        return Ok("Book Updated Successfully");
     }
 
     [HttpDelete("{bookId}")] // DELETE: api/book/{bookId}

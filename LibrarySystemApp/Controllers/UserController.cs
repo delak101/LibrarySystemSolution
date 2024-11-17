@@ -58,7 +58,8 @@ public class UserController(IUserService userService, ITokenService tokenService
         var updatedUser = await userService.UpdateUserProfileAsync(userId, updateUserDto);
         if (!updatedUser) return NotFound("User not found or update failed");
         
-        return Ok(updatedUser);
+        return Ok("User updated successfully.");
+        // return await GetUserProfile(userId);
     }
     // [Authorize(policy:"AdminOnly")]
     [HttpDelete("profile/delete/{userId}")] // DELETE deleteUser user/profile/{userId}

@@ -1,9 +1,9 @@
 ﻿using LibrarySystemApp.DTOs;
-using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
-using Microsoft.AspNetCore.Mvc;
+using LibrarySystemApp.Repositories.Interfaces;
+using LibrarySystemApp.Services.Interfaces;
 
-namespace LibrarySystemApp.Services;
+namespace LibrarySystemApp.Services.Implementation;
 
 public class BookService(IBookRepository bookRepository) : IBookService
 {
@@ -15,9 +15,9 @@ public class BookService(IBookRepository bookRepository) : IBookService
             Author = bookDto.Author,
             Description = bookDto.Description,
             Shelf = bookDto.Shelf,
-            State = bookDto.State,
+            IsAvailable = bookDto.State,
             Department = bookDto.Department,
-            Year = bookDto.Year
+            AssignedYear= bookDto.Year
         };
         await bookRepository.AddBookAsync(book);
 
@@ -37,9 +37,9 @@ public class BookService(IBookRepository bookRepository) : IBookService
             Author = book.Author,
             Description = book.Description,
             Shelf = book.Shelf,
-            State = book.State,
+            State = book.IsAvailable,
             Department = book.Department,
-            Year = book.Year
+            Year = book.AssignedYear
         };
     }
 
@@ -53,9 +53,9 @@ public class BookService(IBookRepository bookRepository) : IBookService
             Author = book.Author,
             Description = book.Description,
             Shelf = book.Shelf,
-            State = book.State,
+            State = book.IsAvailable,
             Department = book.Department,
-            Year = book.Year
+            Year = book.AssignedYear
         }).ToList();
     }
 
@@ -69,9 +69,9 @@ public class BookService(IBookRepository bookRepository) : IBookService
         book.Author = bookDto.Author;
         book.Description = bookDto.Description;
         book.Shelf = bookDto.Shelf;
-        book.State = bookDto.State;
+        book.IsAvailable = bookDto.State;
         book.Department = bookDto.Department;
-        book.Year = bookDto.Year;
+        book.AssignedYear = bookDto.Year;
 
         await bookRepository.UpdateBookAsync(book);
 
@@ -83,9 +83,9 @@ public class BookService(IBookRepository bookRepository) : IBookService
             Author = book.Author,
             Description = book.Description,
             Shelf = book.Shelf,
-            State = book.State,
+            State = book.IsAvailable,
             Department = book.Department,
-            Year = book.Year
+            Year = book.AssignedYear
         };
     }
 

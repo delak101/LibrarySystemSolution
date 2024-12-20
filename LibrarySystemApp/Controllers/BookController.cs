@@ -1,7 +1,5 @@
-﻿using LibrarySystemApp.Data;
-using LibrarySystemApp.DTOs;
-using LibrarySystemApp.Interfaces;
-using LibrarySystemApp.Models;
+﻿using LibrarySystemApp.DTOs;
+using LibrarySystemApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystemApp.Controllers;

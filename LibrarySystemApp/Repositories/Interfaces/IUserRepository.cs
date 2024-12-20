@@ -1,6 +1,6 @@
 ﻿using LibrarySystemApp.Models;
 
-namespace LibrarySystemApp.Interfaces;
+namespace LibrarySystemApp.Repositories.Interfaces;
 
 public interface IUserRepository
 {
@@ -8,7 +8,7 @@ public interface IUserRepository
     Task<User> GetUserByIdAsync(int userId);
 
     // Retrieves a user by their email (useful for login and checking uniqueness)
-    Task<User> GetUserByEmailAsync(string email);
+    Task<User?> GetUserByEmailAsync(string email);
 
     // Adds a new user to the database
     Task AddUserAsync(User user);

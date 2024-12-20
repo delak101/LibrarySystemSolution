@@ -1,9 +1,9 @@
 ﻿using LibrarySystemApp.Data;
-using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
+using LibrarySystemApp.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibrarySystemApp.Repositories;
+namespace LibrarySystemApp.Repositories.Implementation;
 
 public class BookRepository(LibraryContext context) : IBookRepository
 {

@@ -9,7 +9,7 @@ public interface IUserService
     Task<bool> RegisterAsync(RegisterDto registerDto);
 
     // Authenticates a user and returns a token if successful
-    Task<string?> LoginAsync(LoginDto loginDto);
+    Task<UserResponseDto> LoginAsync(LoginDto loginDto);
 
     // Retrieves user details for profile display
     Task<UserDto> GetUserProfileAsync(int userId);
@@ -19,5 +19,8 @@ public interface IUserService
 
     // Deletes a user account
     Task<bool> DeleteUserAsync(int userId);
+    
+    // Verify user password
+    public bool VerifyPassword(string inputPassword, string storedHash, string storedSalt);
 
 }

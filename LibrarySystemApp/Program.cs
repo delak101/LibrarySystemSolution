@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using LibrarySystemApp.Data;
 using LibrarySystemApp.Interfaces;
-using LibrarySystemApp.Repositories;
-using LibrarySystemApp.Services;
+using LibrarySystemApp.Repositories.Implementation;
+using LibrarySystemApp.Repositories.Interfaces;
+using LibrarySystemApp.Services.Implementation;
+using LibrarySystemApp.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<LibraryContext>(opt => 
 {
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING"));
+    // opt.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")); // DefaultConnection or AZURE_SQL_CONNECTIONSTRING
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 // Add Authorization Services
@@ -43,6 +46,16 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("StudentOnly", policy => policy.RequireClaim("role", "student"));
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin() // Allow requests from any domain
+            .AllowAnyMethod() // Allow all HTTP methods (GET, POST, etc.)
+            .AllowAnyHeader(); // Allow all headers
+    });
+});
+
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
@@ -57,6 +70,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 

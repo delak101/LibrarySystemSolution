@@ -15,35 +15,46 @@ public class UserController(IUserService userService, ITokenService tokenService
     {
         try
         {
-            var registeredUser = await userService.RegisterAsync(registerDto);
-            if (!registeredUser)
+            var isRegistered = await userService.RegisterAsync(registerDto);
+            if (!isRegistered)
             {
                 return BadRequest(new { Message = "User already exists or registration failed." });
             }
             return Ok(new { Message = "User registered successfully." });
         }
+        catch (InvalidOperationException ex)
+        {
+            // Log exception (e.g., logger.LogError(ex, "Invalid operation during registration"))
+            return BadRequest(new { hint = "problem here", Message = ex.Message });
+        }
         catch (Exception ex)
         {
-            // Log exception
+            // Log exception (e.g., logger.LogError(ex, "Internal server error"))
             return StatusCode(500, new { Message = "An internal server error occurred.", Details = ex.Message });
         }
-    
-        //"User registered successfully."
-        return Ok(new { Message = "User registered successfully." });
     }
 
     [HttpPost("login")] // POST : user/login
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        var token = await userService.LoginAsync(loginDto);
-        if (token == null) 
-            return Unauthorized("Invalid email or password");
-    
-        return Ok(new { Token = token });
+        try
+        {
+            var response = await userService.LoginAsync(loginDto);
+            return Ok(response);
+
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
+        }
     }
     
     // [Authorize(policy:"AdminOnly")]
-    [HttpGet("profile/search/{userId}")] // GET findUser user/profile/search/{userId}
+    [HttpGet("profile/search/{userId}")] // GET findUser user/profile/search/{serId}
     public async Task<ActionResult<UserDto>> GetUserProfile(int userId)
     {
         var user = await userService.GetUserProfileAsync(userId);

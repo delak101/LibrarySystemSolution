@@ -6,7 +6,7 @@ using LibrarySystemApp.Models;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace LibrarySystemApp.Services;
+namespace LibrarySystemApp.Services.Implementation;
 
 public class TokenService(IConfiguration config) : ITokenService
 {
@@ -16,8 +16,12 @@ public class TokenService(IConfiguration config) : ITokenService
     {
         var claims = new[]
         {
+            // new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            // new Claim("role", user.Role), //Make sure that the values of the user.Role match the exact values in the policies (e.g., "admin" and "student")
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("role", user.Role), //Make sure that the values of the user.Role match the exact values in the policies (e.g., "admin" and "student")
+            new Claim("role", user.Role.ToString()),
+            new Claim("department", user.Department)
         };
         
         var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -32,7 +36,5 @@ public class TokenService(IConfiguration config) : ITokenService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         
         return tokenHandler.WriteToken(token);
-        
-        //Note: The JWT token's signing key (TokenKey) should be stored securely, typically in appsettings.json.
     }
 }

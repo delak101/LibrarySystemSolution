@@ -9,5 +9,5 @@ public class BookResponseDto
     public string Shelf { get; set; }
     public bool State { get; set; }
     public string Department { get; set; }
-    public int Year { get; set; }
+    public int? Year { get; set; }
 }

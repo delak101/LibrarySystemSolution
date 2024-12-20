@@ -2,7 +2,7 @@
 using LibrarySystemApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LibrarySystemApp.Interfaces;
+namespace LibrarySystemApp.Services.Interfaces;
 
 public interface IBookService
 {

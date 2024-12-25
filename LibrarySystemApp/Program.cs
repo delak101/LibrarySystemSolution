@@ -22,7 +22,6 @@ builder.Services.AddSwaggerGen();
 
 // Add Mapster
 MappingConfig.RegisterMappings();
-builder.Services.AddMapster();
 
 // Add the controllers service
 builder.Services.AddControllers();

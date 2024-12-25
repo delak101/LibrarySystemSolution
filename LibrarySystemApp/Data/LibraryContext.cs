@@ -47,7 +47,7 @@ namespace LibrarySystemApp.Data
 
             modelBuilder.Entity<User>()
                 .Property(u => u.Year)
-                .IsRequired(false);
+                .IsRequired();
 
             // Favorite entity configuration
             modelBuilder.Entity<Favorite>()

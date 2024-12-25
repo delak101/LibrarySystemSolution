@@ -8,5 +8,5 @@ public class RegisterDto
     public required UserRole Role { get; set; }  // Admin, Student
     public required string Department { get; set; }  // IT, CS, IS
     public required string Phone { get; set; } // Ensure Phone is required
-    public int? Year { get; set; }  // Student's academic year, nullable for non-student roles
+    public int Year { get; set; }  // Student's academic year, nullable for non-student roles
 }

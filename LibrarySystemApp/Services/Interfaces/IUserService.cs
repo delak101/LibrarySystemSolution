@@ -14,6 +14,9 @@ public interface IUserService
     // Retrieves user details for profile display
     Task<UserDto> GetUserProfileAsync(int userId);
 
+    // Retrieves all users in database
+    Task<List<UserDto>> GetAllUsersAsync();
+
     // Updates user profile details
     Task<bool> UpdateUserProfileAsync(int userId, UpdateUserDto updateUserDto);
 
@@ -21,6 +24,14 @@ public interface IUserService
     Task<bool> DeleteUserAsync(int userId);
     
     // Verify user password
-    public bool VerifyPassword(string inputPassword, string storedHash, string storedSalt);
+    bool VerifyPassword(string inputPassword, string storedHash, string storedSalt);
 
+    // Retrieve user by email
+    Task<UserDto?> GetUserProfileByEmailAsync(string email);
+
+    // Update user by email
+    Task<bool> UpdateUserProfileByEmailAsync(string email, UpdateUserDto updateUserDto);
+    
+    // Delete user by email
+    Task<bool> DeleteUserByEmailAsync(string email);
 }

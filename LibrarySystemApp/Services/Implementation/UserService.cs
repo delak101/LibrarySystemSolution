@@ -68,11 +68,28 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
                 Email = user.Email,
                 Role = user.Role,
                 Department = user.Department,
-                Token = token
+                Year = user.Year,
+                Phone = user.Phone
             },
             Token = token
         };
 
+    }
+    
+
+    public async Task<List<UserDto>> GetAllUsersAsync()
+    {
+        var users = await userRepository.GetAllUsersAsync();
+        return users.Select(user => new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role,
+            Department = user.Department,
+            Year = user.Year,
+            Phone = user.Phone
+        }).ToList();
     }
     
     public async Task<UserDto> GetUserProfileAsync(int userId)
@@ -87,19 +104,21 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
             Email = user.Email,
             Role = user.Role,
             Department = user.Department,
-            Token = null
+            Year = user.Year,
+            Phone = user.Phone
         };
     }
 
     public async Task<bool> UpdateUserProfileAsync(int userId, UpdateUserDto updateUserDto)
     {
         var user = await userRepository.GetUserByIdAsync(userId);
-        if (user == null) return false;
 
         // Update only the modified fields
         user.Name = updateUserDto.Name ?? user.Name;
         user.Email = updateUserDto.Email ?? user.Email;
         user.Department = updateUserDto.Department ?? user.Department;
+        user.Year = updateUserDto.Year; // can't use ?? operator with int
+        user.Phone = updateUserDto.Phone ?? user.Phone;
         await userRepository.UpdateUserAsync(user);
         return true;
     }
@@ -107,7 +126,6 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
     public async Task<bool> DeleteUserAsync(int userId)
     {
         var user = await userRepository.GetUserByIdAsync(userId);
-        if (user == null) return false;
 
         await userRepository.DeleteUserAsync(userId);
         return true;
@@ -119,4 +137,44 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
         return hashInput == storedHash;
     }
 
+    public async Task<UserDto?> GetUserProfileByEmailAsync(string email)
+    {
+        var user = await userRepository.GetUserByEmailAsync(email);
+        if (user == null) return null;
+
+        return new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role,
+            Department = user.Department,
+            Year = user.Year,
+            Phone = user.Phone
+        };
+    }
+
+    public async Task<bool> UpdateUserProfileByEmailAsync(string email, UpdateUserDto updateUserDto)
+    {
+        var user = await userRepository.GetUserByEmailAsync(email);
+        if (user == null) return false;
+
+        user.Name = updateUserDto.Name ?? user.Name;
+        user.Email = updateUserDto.Email ?? user.Email;
+        user.Department = updateUserDto.Department ?? user.Department;
+        user.Phone = updateUserDto.Phone ?? user.Phone;
+        user.Year = updateUserDto.Year;
+
+        await userRepository.UpdateUserByEmailAsync(email, user);
+        return true;
+    }
+
+    public async Task<bool> DeleteUserByEmailAsync(string email)
+    {
+        var user = await userRepository.GetUserByEmailAsync(email);
+        if (user == null) return false;
+
+        await userRepository.DeleteUserByEmailAsync(email);
+        return true;
+    }
 }

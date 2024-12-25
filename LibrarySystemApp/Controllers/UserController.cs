@@ -52,9 +52,16 @@ public class UserController(IUserService userService, ITokenService tokenService
             return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
         }
     }
-    
+
+    [HttpGet("all")] // GET: api/user/all
+    public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+    {
+        var users = await userService.GetAllUsersAsync();
+        return Ok(users);
+    }
+
     // [Authorize(policy:"AdminOnly")]
-    [HttpGet("profile/search/{userId}")] // GET findUser user/profile/search/{serId}
+    [HttpGet("profile/searchid/{userId}")] // GET findUser user/profile/search/{serId}
     public async Task<ActionResult<UserDto>> GetUserProfile(int userId)
     {
         var user = await userService.GetUserProfileAsync(userId);
@@ -63,7 +70,7 @@ public class UserController(IUserService userService, ITokenService tokenService
         return Ok(user);
     }
 
-    [HttpPut("profile/update/{userId}")] // PUT editUser user/profile/update/{userId}
+    [HttpPut("profile/updateid/{userId}")] // PUT editUser user/profile/update/{userId}
     public async Task<IActionResult> UpdateUserProfile(int userId, UpdateUserDto updateUserDto)
     {
         var updatedUser = await userService.UpdateUserProfileAsync(userId, updateUserDto);
@@ -73,10 +80,37 @@ public class UserController(IUserService userService, ITokenService tokenService
         // return await GetUserProfile(userId);
     }
     // [Authorize(policy:"AdminOnly")]
-    [HttpDelete("profile/delete/{userId}")] // DELETE deleteUser user/profile/delete/{userId}
+    [HttpDelete("profile/deleteid/{userId}")] // DELETE deleteUser user/profile/delete/{userId}
     public async Task<IActionResult> DeleteUser(int userId)
     {
         var result = await userService.DeleteUserAsync(userId);
+        if (!result) return NotFound("User not found");
+
+        return NoContent();
+    }
+
+    [HttpGet("profile/search/{email}")] // GET findUser user/profile/search/{email}
+    public async Task<ActionResult<UserDto>> GetUserProfile(string email)
+    {
+        var user = await userService.GetUserProfileByEmailAsync(email);
+        if (user == null) return NotFound("User not found");
+        
+        return Ok(user);
+    }
+
+    [HttpPut("profile/update/{email}")] // PUT editUser user/profile/update/{email}
+    public async Task<IActionResult> UpdateUserProfile(string email, UpdateUserDto updateUserDto)
+    {
+        var updatedUser = await userService.UpdateUserProfileByEmailAsync(email, updateUserDto);
+        if (!updatedUser) return NotFound("User not found or update failed");
+        
+        return Ok("User updated successfully.");
+    }
+
+    [HttpDelete("profile/delete/{email}")] // DELETE deleteUser user/profile/delete/{email}
+    public async Task<IActionResult> DeleteUser(string email)
+    {
+        var result = await userService.DeleteUserByEmailAsync(email);
         if (!result) return NotFound("User not found");
 
         return NoContent();

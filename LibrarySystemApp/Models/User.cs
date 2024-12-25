@@ -29,7 +29,7 @@ namespace LibrarySystemApp.Models
         [Phone]
         public string? Phone { get; set; } // Changed to string to support formatting
 
-        public int? Year { get; set; } // Nullable to handle non-student roles
+        public int Year { get; set; } // Nullable to handle non-student roles
 
         public ICollection<Favorite> Favorites { get; set; }
         public ICollection<Borrow> Borrows { get; set; }

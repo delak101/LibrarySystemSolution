@@ -1,19 +1,28 @@
+using Mapster;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using LibrarySystemApp.Data;
+using LibrarySystemApp.Mappings;
 using LibrarySystemApp.Interfaces;
-using LibrarySystemApp.Repositories.Implementation;
-using LibrarySystemApp.Repositories.Interfaces;
-using LibrarySystemApp.Services.Implementation;
 using LibrarySystemApp.Services.Interfaces;
+using LibrarySystemApp.Services.Implementation;
+using LibrarySystemApp.Repositories.Interfaces;
+using LibrarySystemApp.Repositories.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Allow App to be externally accessible on port 5000
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add Mapster
+MappingConfig.RegisterMappings();
+builder.Services.AddMapster();
 
 // Add the controllers service
 builder.Services.AddControllers();
@@ -27,6 +36,7 @@ builder.Services.AddDbContext<LibraryContext>(opt =>
 // Add Authorization Services
 builder.Services.AddAuthorization();
 
+// Add Authentication Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -40,12 +50,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
-builder.Services.AddAuthorization(options => 
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireClaim("role", "admin"));
-    options.AddPolicy("StudentOnly", policy => policy.RequireClaim("role", "student"));
-});
 
+// TODO: Authorization for students and admin
+// builder.Services.AddAuthorization(options => 
+// {
+//     options.AddPolicy("AdminOnly", policy => policy.RequireClaim("role", "admin"));
+//     options.AddPolicy("StudentOnly", policy => policy.RequireClaim("role", "student"));
+// });
+
+// Configuring AllowAll Policy 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -57,6 +70,7 @@ builder.Services.AddCors(options =>
 });
 
 
+// Adding Scopes and services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -71,6 +85,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Allowing Access
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();

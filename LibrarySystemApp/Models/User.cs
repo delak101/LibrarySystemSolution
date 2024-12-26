@@ -7,30 +7,26 @@ namespace LibrarySystemApp.Models
     {
         public int Id { get; set; }
         
-        [Required]
         [MaxLength(100)] // Ensure name length is reasonable
-        public string Name { get; set; }
+        public required string Name { get; set; }
         
-        [Required]
         [MaxLength(256)] // Ensures compatibility with SQL Server
         [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
+        public required string Email { get; set; }
+        
         [MinLength(8)] // Ensure password security
-        public string PasswordHash { get; set; }
+        public required string PasswordHash { get; set; }
 
-        public UserRole Role { get; set; }
+        public UserRole Role { get; set; } = 0;
 
         [MaxLength(100)] // Limit department name length
-        public string Department { get; set; }  // GENERAL, IT, CS, IS, DS, AI, GIS, BIO
+        public required string Department { get; set; }  // GENERAL, IT, CS, IS, DS, AI, GIS, BIO
 
-        [Required]
         [Phone]
-        public string? Phone { get; set; } // Changed to string to support formatting
+        public required string Phone { get; set; } // Changed to string to support formatting
 
-        public int Year { get; set; } // Nullable to handle non-student roles
-
+        public int Year { get; set; }
+        
         public ICollection<Favorite> Favorites { get; set; }
         public ICollection<Borrow> Borrows { get; set; }
         public ICollection<Review> Reviews { get; set; }

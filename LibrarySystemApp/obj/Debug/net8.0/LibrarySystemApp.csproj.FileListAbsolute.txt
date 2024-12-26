@@ -197,3 +197,6 @@ C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\obj\Debug\ne
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\obj\Debug\net8.0\LibrarySystemApp.pdb
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\obj\Debug\net8.0\LibrarySystemApp.genruntimeconfig.cache
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\obj\Debug\net8.0\ref\LibrarySystemApp.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\Mapster.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\Mapster.Core.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\Mapster.DependencyInjection.dll

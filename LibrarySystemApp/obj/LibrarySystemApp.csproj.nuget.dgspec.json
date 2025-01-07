@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\librarysystemapp\\LibrarySystemApp.csproj": {}
+    "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\LibrarySystemApp\\LibrarySystemApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\librarysystemapp\\LibrarySystemApp.csproj": {
+    "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\LibrarySystemApp\\LibrarySystemApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\librarysystemapp\\LibrarySystemApp.csproj",
+        "projectUniqueName": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\LibrarySystemApp\\LibrarySystemApp.csproj",
         "projectName": "LibrarySystemApp",
-        "projectPath": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\librarysystemapp\\LibrarySystemApp.csproj",
+        "projectPath": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\LibrarySystemApp\\LibrarySystemApp.csproj",
         "packagesPath": "C:\\Users\\Delak\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\librarysystemapp\\obj\\",
+        "outputPath": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\LibrarySystemApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

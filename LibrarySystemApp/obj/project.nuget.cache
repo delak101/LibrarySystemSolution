@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "BTk3VjZ0iIQ=",
+  "dgSpecHash": "5WFXlt4rT0M=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\librarysystemapp\\LibrarySystemApp.csproj",
+  "projectFilePath": "C:\\Users\\Delak\\RiderProjects\\LibrarySystemSolution\\LibrarySystemApp\\LibrarySystemApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Delak\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Delak\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

@@ -1,163 +1,215 @@
-# **Library System API Documentation**  
+# Library System API Documentation
 
-## **Base URL**  
-`https://app-librarysystem-centralus-dev-001.azurewebsites.net`  
+## Base URL
+- **IPv4**: http://167.172.105.89
 
----
+## Authentication
+The application uses JWT-based authentication. Each request to a protected endpoint must include a valid JWT token in the Authorization header.
 
-## **Endpoints**  
+```
+Authorization: Bearer <token>
+```
 
-### **1. User APIs**  
+## Endpoints
 
-#### **Register User**  
-- **Endpoint:** `/api/User/register`  
-- **Method:** POST  
-- **Payload:**  
-```json
-{
-  "name": "string",
-  "email": "string",
-  "password": "string",
-  "role": "string",
-  "department": "string",
-  "phone": "string",
-  "year": 0
-}
-```  
-- **Description:** Registers a new user with the provided details.  
+### Users
 
-#### **Login User**  
-- **Endpoint:** `/api/User/login`  
-- **Method:** POST  
-- **Payload:**  
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```  
-- **Description:** Authenticates the user and returns a token upon successful login.  
-
-#### **Search User Profile**  
-- **Endpoint:** `/api/User/profile/search/{userId}`  
-- **Method:** GET  
-- **Response:**  
-```json
-{
-  "id": 0,
-  "name": "string",
-  "email": "string",
-  "role": "string",
-  "department": "string",
-  "token": "string"
-}
-```  
-- **Description:** Retrieves the profile details for a specific user by ID.  
-
-#### **Update User Profile**  
-- **Endpoint:** `/api/User/profile/update/{userId}`  
-- **Method:** PUT  
-- **Payload:**  
-```json
-{
-  "name": "string",
-  "email": "string",
-  "department": "string",
-  "phone": 0,
-  "year": 0
-}
-```  
-- **Description:** Updates the profile details for the specified user ID.  
-
-#### **Delete User Profile**  
-- **Endpoint:** `/api/User/profile/delete/{userId}`  
-- **Method:** DELETE  
-- **Description:** Deletes the profile for the specified user ID.  
-
----
-
-### **2. Book APIs**  
-
-#### **Add Book**  
-- **Endpoint:** `/api/Book/addBook`  
-- **Method:** POST  
-- **Payload:**  
-```json
-{
-  "name": "string",
-  "author": "string",
-  "description": "string",
-  "shelf": "string",
-  "state": true,
-  "department": "string",
-  "year": 0
-}
-```  
-- **Description:** Adds a new book to the library system.  
-
-#### **Search Book by ID**  
-- **Endpoint:** `/api/Book/search/{bookId}`  
-- **Method:** GET  
-- **Response:**  
-```json
-{
-  "id": 0,
-  "name": "string",
-  "author": "string",
-  "description": "string",
-  "shelf": "string",
-  "state": true,
-  "department": "string",
-  "year": 0
-}
-```  
-- **Description:** Retrieves the details of a specific book by ID.  
-
-#### **Search All Books**  
-- **Endpoint:** `/api/Book/search`  
-- **Method:** GET  
-- **Response:**  
-```json
-[
+#### 1. Register a User
+- **Endpoint**: `POST /api/users/register`
+- **Description**: Registers a new user.
+- **Request Body**:
+  ```json
   {
-    "id": 0,
+    "name": "string",
+    "email": "string",
+    "password": "string",
+    "role": "admin|student",
+    "department": "IT|CS|IS"
+  }
+  ```
+- **Response**:
+  - **201 Created**:
+    ```json
+    {
+      "id": "int",
+      "name": "string",
+      "email": "string",
+      "role": "string",
+      "department": "string"
+    }
+    ```
+
+#### 2. Login
+- **Endpoint**: `POST /api/users/login`
+- **Description**: Authenticates a user and returns a JWT token.
+- **Request Body**:
+  ```json
+  {
+    "email": "string",
+    "password": "string"
+  }
+  ```
+- **Response**:
+  - **200 OK**:
+    ```json
+    {
+      "token": "string"
+    }
+    ```
+
+### Books
+
+#### 1. Add a Book
+- **Endpoint**: `POST /api/books`
+- **Description**: Adds a new book to the library.
+- **Request Body**:
+  ```json
+  {
     "name": "string",
     "author": "string",
     "description": "string",
     "shelf": "string",
-    "state": true,
-    "department": "string",
-    "year": 0
+    "state": "available|borrowed",
+    "department": "IT|CS|IS",
+    "year": "int"
   }
-]
-```  
-- **Description:** Retrieves a list of all books in the library system.  
+  ```
+- **Response**:
+  - **201 Created**:
+    ```json
+    {
+      "id": "int",
+      "name": "string",
+      "author": "string",
+      "description": "string",
+      "shelf": "string",
+      "state": "string",
+      "department": "string",
+      "year": "int"
+    }
+    ```
 
-#### **Update Book Details**  
-- **Endpoint:** `/api/Book/update/{bookId}`  
-- **Method:** PUT  
-- **Payload:**  
-```json
-{
-  "name": "string",
-  "author": "string",
-  "description": "string",
-  "shelf": "string",
-  "state": true,
-  "department": "string",
-  "year": 0
-}
-```  
-- **Description:** Updates the details of a specific book by ID.  
+#### 2. Get All Books
+- **Endpoint**: `GET /api/books`
+- **Description**: Retrieves all books in the library.
+- **Response**:
+  - **200 OK**:
+    ```json
+    [
+      {
+        "id": "int",
+        "name": "string",
+        "author": "string",
+        "description": "string",
+        "shelf": "string",
+        "state": "string",
+        "department": "string",
+        "year": "int"
+      }
+    ]
+    ```
 
-#### **Delete Book**  
-- **Endpoint:** `/api/Book/delete/{bookId}`  
-- **Method:** DELETE  
-- **Description:** Deletes a specific book from the library system by ID.  
+### Borrow Requests
 
----
+#### 1. Create a Borrow Request
+- **Endpoint**: `POST /api/borrow-requests`
+- **Description**: Submits a borrow request for a book.
+- **Request Body**:
+  ```json
+  {
+    "bookId": "int",
+    "studentId": "int",
+    "days": "int"
+  }
+  ```
+- **Response**:
+  - **201 Created**:
+    ```json
+    {
+      "id": "int",
+      "date": "string",
+      "bookId": "int",
+      "studentId": "int",
+      "days": "int"
+    }
+    ```
 
-TODO
-- **Authentication:** Include necessary authentication headers, e.g., `Authorization: Bearer <token>`, if applicable.  
-- **Error Handling:** Ensure to handle common HTTP errors like `400 Bad Request`, `401 Unauthorized`, and `404 Not Found`.  
-- **Content-Type:** Use `Content-Type: application/json` for all POST/PUT requests.  
+#### 2. Get Borrow Requests
+- **Endpoint**: `GET /api/borrow-requests`
+- **Description**: Retrieves all borrow requests.
+- **Response**:
+  - **200 OK**:
+    ```json
+    [
+      {
+        "id": "int",
+        "date": "string",
+        "bookId": "int",
+        "studentId": "int",
+        "days": "int"
+      }
+    ]
+    ```
+
+### Favorites
+
+#### 1. Add a Favorite Book
+- **Endpoint**: `POST /api/favorites`
+- **Description**: Marks a book as a favorite for a student.
+- **Request Body**:
+  ```json
+  {
+    "studentId": "int",
+    "bookId": "int"
+  }
+  ```
+- **Response**:
+  - **201 Created**:
+    ```json
+    {
+      "studentId": "int",
+      "bookId": "int"
+    }
+    ```
+
+#### 2. Get Favorite Books
+- **Endpoint**: `GET /api/favorites/{studentId}`
+- **Description**: Retrieves a student's favorite books.
+- **Response**:
+  - **200 OK**:
+    ```json
+    [
+      {
+        "studentId": "int",
+        "bookId": "int"
+      }
+    ]
+    ```
+
+## Error Responses
+
+- **400 Bad Request**: Invalid input or request.
+  ```json
+  {
+    "error": "string"
+  }
+  ```
+- **401 Unauthorized**: Authentication failed.
+  ```json
+  {
+    "error": "Unauthorized"
+  }
+  ```
+- **404 Not Found**: Resource not found.
+  ```json
+  {
+    "error": "Not Found"
+  }
+  ```
+- **500 Internal Server Error**: Unexpected error.
+  ```json
+  {
+    "error": "Internal Server Error"
+  }
+  ```
+

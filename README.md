@@ -15,32 +15,46 @@ Authorization: Bearer <token>
 ### Users
 
 #### 1. Register a User
-- **Endpoint**: `POST /api/users/register`
+- **Endpoint**: `POST /api/user/register`
 - **Description**: Registers a new user.
 - **Request Body**:
   ```json
   {
     "name": "string",
-    "email": "string",
+    "email": "string@text.com",
     "password": "string",
-    "role": "admin|student",
-    "department": "IT|CS|IS"
+    "role": 0,                  #( 0 admin/ 1 student )
+    "department": "IT|CS|IS",
+    "phone": "string",
+    "year": 3                     #(1,2,3,4)
   }
   ```
 - **Response**:
-  - **201 Created**:
+  - **200 OK**:
     ```json
     {
-      "id": "int",
-      "name": "string",
-      "email": "string",
-      "role": "string",
-      "department": "string"
+    "message": "User registered successfully."
     }
     ```
+    
+  - **400 BAD**:
+    ```json
+    {
+    "message": "User already exists or registration failed."
+    }
+    ```
+    ps: todo -> phone number has to be unique as well. if phone number exist could get response like:
+      - **400 BAD**:
+        ```json
+        {
+            "hint": "problem here",
+            "message": "A user with this email already exists. also problem with AddAsync or savingchanges"
+        }       
+        ```
+
 
 #### 2. Login
-- **Endpoint**: `POST /api/users/login`
+- **Endpoint**: `POST /api/user/login`
 - **Description**: Authenticates a user and returns a JWT token.
 - **Request Body**:
   ```json
@@ -53,9 +67,184 @@ Authorization: Bearer <token>
   - **200 OK**:
     ```json
     {
-      "token": "string"
+    "user": {
+        "id": 1,
+        "name": "test",
+        "email": "test@test.com",
+        "role": 0,
+        "department": "IT",
+        "year": 4,
+        "phone": "8934819"
+    },
+    "token": "very secret token"
     }
     ```
+  - **401 Unauthorized**:
+    ```json
+    {
+    "message": "User does not exist."
+    }
+    ```
+    ```json
+    {
+        "message": "Invalid password."
+    }
+    ```
+
+#### 3. Get a User
+  ##### .1 ID
+  - **Endpoint**: `GET /api/user/profile/searchid/{id}`
+  - **Description**: Get a user by Id.
+  - **Response**:
+    - **200 OK**:
+      ```json
+      {
+          "id": 2,
+          "name": "test2",
+          "email": "test2@test.com",
+          "role": 0,
+          "department": "IT",
+          "year": 4,
+          "phone": "854519"
+      }
+      ```
+      
+    - **404 Not Found**:
+      - User not found
+      
+  ##### .2 Email
+  - **Endpoint**: `GET /api/user/profile/search/{email}`
+  - **Description**: Get a user by Email.
+  - **Response**:
+    - **200 OK**:
+      ```json
+      {
+          "id": 2,
+          "name": "test2",
+          "email": "test2@test.com",
+          "role": 0,
+          "department": "IT",
+          "year": 4,
+          "phone": "854519"
+      }
+      ```
+      
+    - **404 Not Found**:
+      - User not found
+      
+#### 4. Get All Users
+- **Endpoint**: `GET /api/user/all`
+- **Description**: Authenticates a user and returns a JWT token.
+- **Response**:
+  - **200 OK**:
+    ```json
+    [
+        {
+            "id": 1,
+            "name": "test",
+            "email": "test@test.com",
+            "role": 0,
+            "department": "IT",
+            "year": 4,
+            "phone": "8934819"
+        },
+        {
+            "id": 2,
+            "name": "test2",
+            "email": "test2@test.com",
+            "role": 0,
+            "department": "IT",
+            "year": 4,
+            "phone": "854519"
+        }
+    ]
+    ```
+    
+#### 5. Update a User
+  ##### .1 ID
+  - **Endpoint**: `PUT /api/user/profile/updateid/{id}`
+  - **Description**: Update existing user by id.
+  - **Request Body**:
+    ```json
+    {
+      "name": "test4",
+      "email": "test@test.com",
+      "department": "CS",
+      "phone": "654-4520",
+      "year": 4
+    }
+    ```
+  - **Response**:
+    - **200 OK**:
+      User updated successfully.
+
+    - **404 Not Found**:
+      User not found or update failed.
+      
+    - **500 Internal Server Error**:
+        Error message indicating user with email exist (not handled yet)
+      
+  ##### .2 Email
+  - **Endpoint**: `PUT /api/user/profile/update/{email}`
+  - **Description**: Update existing user by email.
+  - **Request Body**:
+    ```json
+    {
+      "name": "test4",
+      "email": "test@test.com",
+      "department": "CS",
+      "phone": "654-4520",
+      "year": 4
+    }
+    ```
+  - **Response**:
+    - **200 OK**:
+        User updated successfully.
+
+    - **404 Not Found**:
+      User not found or update failed.
+      
+    - **500 Internal Server Error**:
+        Error message indicating user with email exist (not handled yet)
+      
+#### 6. Delete a User
+  ##### ID
+  - **Endpoint**: `DELETE /api/user/profile/deleteid/{id}`
+  - **Description**: Delete existing user by id.
+  - **Response**:
+    - **200 OK**:
+      User not found or update failed
+      
+    - **500 Internal Server Error**:
+      System.InvalidOperationException: User not found.
+      
+  ##### Email
+  - **Endpoint**: `PUT /api/user/profile/update/{email}`
+  - **Description**: Update existing user by email.
+  - **Request Body**:
+    ```json
+    {
+      "name": "test4",
+      "email": "test@test.com",
+      "department": "CS",
+      "phone": "654-4520",
+      "year": 4
+    }
+    ```
+  - **Response**:
+    - **200 OK**:
+      User not found or update failed
+      
+    - **404 Not Found**:
+      User not found.
+
+    - **500 Internal Server Error**:
+        Error message indicating user with email exist (not handled yet)
+  
+
+---
+
+#### **IN PROGRESS**
 
 ### Books
 

@@ -48,7 +48,7 @@ namespace LibrarySystemApp.Repositories.Implementation
                 // Check if it's a unique constraint violation
                 if (ex.InnerException?.Message.Contains("UNIQUE constraint failed") == true)
                 {
-                    throw new InvalidOperationException("A user with this email already exists. also problem with AddAsync or savingchanges");
+                    throw new InvalidOperationException("A user with this Email or Phone number already exists.");
                 }
                 throw; // Re-throw other exceptions
             }

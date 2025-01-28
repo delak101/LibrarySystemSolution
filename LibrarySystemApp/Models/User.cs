@@ -17,7 +17,7 @@ namespace LibrarySystemApp.Models
         [MinLength(8)] // Ensure password security
         public required string PasswordHash { get; set; }
 
-        public UserRole Role { get; set; } = 0;
+        public int Role { get; set; } = 0;
 
         [MaxLength(100)] // Limit department name length
         public required string Department { get; set; }  // GENERAL, IT, CS, IS, DS, AI, GIS, BIO
@@ -31,10 +31,4 @@ namespace LibrarySystemApp.Models
         public ICollection<Borrow> Borrows { get; set; }
         public ICollection<Review> Reviews { get; set; }
     }
-}
-
-public enum UserRole
-{
-    Admin = 0,
-    Student = 1
 }

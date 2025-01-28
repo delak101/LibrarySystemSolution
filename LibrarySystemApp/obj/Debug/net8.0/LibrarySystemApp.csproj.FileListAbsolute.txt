@@ -200,3 +200,6 @@ C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\obj\Debug\ne
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\Mapster.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\Mapster.Core.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\Mapster.DependencyInjection.dll
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\bin\Debug\net8.0\LibrarySystemApp.staticwebassets.endpoints.json
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\Delak\RiderProjects\LibrarySystemSolution\LibrarySystemApp\obj\Debug\net8.0\staticwebassets\msbuild.LibrarySystemApp.Microsoft.AspNetCore.StaticWebAssetEndpoints.props

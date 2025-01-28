@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "s5s3v/36rwjpEGmx9rTnEtMv1R5Tae/x+I+dbSkMNVk=",
+  "Hash": "8cRPhBU87Ot6iRtBctiFtEO6ulLhsf2JE83W7JHcgqg=",
   "Source": "LibrarySystemApp",
   "BasePath": "_content/LibrarySystemApp",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

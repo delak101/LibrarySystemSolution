@@ -1,12 +1,34 @@
-﻿namespace LibrarySystemApp.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using LibrarySystemApp.Models;
+
+namespace LibrarySystemApp.DTOs;
 
 public class BookDto
 {
-    public required string Name { get; set; }
-    public required string Author { get; set; }
-    public required string Description { get; set; }
-    public required string Shelf { get; set; }
-    public bool State { get; set; } // Available or Borrowed
-    public required string Department { get; set; } // IT, CS, IS
-    public required int Year { get; set; } // First-year, second-year, etc.
+    [Required]
+    [MaxLength(500)]
+    public string Name { get; set; }
+
+    [MaxLength(256)]
+    public string? Author { get; set; }
+
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [MaxLength(50)]
+    public string? Shelf { get; set; }
+
+    public bool IsAvailable { get; set; }
+
+    [MaxLength(100)]
+    public string? Department { get; set; }
+    public int? AssignedYear { get; set; }
+    public bool State { get; set; }
+    public string? Image { get; set; }
+    
+    public string? PublisherName { get; set; }
+
+    public List<string> CategoryNames { get; set; } = new List<string>();
+
+    public List<string> AuthorNames { get; set; } = new List<string>();
 }

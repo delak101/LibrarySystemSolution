@@ -7,114 +7,107 @@ namespace LibrarySystemApp.Services.Implementation;
 
 public class BookService(IBookRepository bookRepository) : IBookService
 {
-    public async Task<Book> AddBookAsync(BookDto bookDto)
-    {
-        var book = new Book
+
+        public async Task<BookResponseDto?> GetBookByIdAsync(int bookId)
         {
-            Name = bookDto.Name,
-            Author = bookDto.Author,
-            Description = bookDto.Description,
-            Shelf = bookDto.Shelf,
-            IsAvailable = bookDto.State,
-            Department = bookDto.Department,
-            AssignedYear= bookDto.Year
-        };
-        await bookRepository.AddBookAsync(book);
+            var book = await bookRepository.GetBookByIdAsync(bookId);
+            return book is null ? null : MapToResponseDto(book);
+        }
 
-        return book;
-    }
+        public async Task<List<BookResponseDto>> GetBooksByNameAsync(string name)
+        {
+            var books = await bookRepository.GetBooksByNameAsync(name);
+            return books.Select(MapToResponseDto).ToList();
+        }
 
-    public async Task<BookResponseDto> GetBookByIdAsync(int bookId)
-    {
-        var book = await bookRepository.GetBookByIdAsync(bookId);
-        if (book == null) return null;
+        public async Task<List<BookResponseDto>> GetBooksAsync()
+        {
+            var books = await bookRepository.GetBooksAsync();
+            return books.Select(MapToResponseDto).ToList();
+        }
 
-        // Manual mapping from Book to BookResponseDto
-        return new BookResponseDto
+        public async Task<List<BookResponseDto>> GetBooksByGenreAsync(string genre)
+        {
+            var books = await bookRepository.GetBooksByGenreAsync(genre);
+            return books.Select(MapToResponseDto).ToList();
+        }
+
+        public async Task<List<BookResponseDto>> GetBooksByAuthorAsync(string author)
+        {
+            var books = await bookRepository.GetBooksByAuthorAsync(author);
+            return books.Select(MapToResponseDto).ToList();
+        }
+
+        public async Task<List<BookResponseDto>> GetBooksByAvailabilityAsync(bool isAvailable)
+        {
+            var books = await bookRepository.GetBooksByAvailabilityAsync(isAvailable);
+            return books.Select(MapToResponseDto).ToList();
+        }
+
+        public async Task<List<BookResponseDto>> GetBooksByYearAsync(int year)
+        {
+            var books = await bookRepository.GetBooksByYearAsync(year);
+            return books.Select(MapToResponseDto).ToList();
+        }
+
+        public async Task<BookResponseDto> AddBookAsync(BookDto bookDto)
+        {
+            var book = new Book
+            {
+                Name = bookDto.Name,
+                Author = bookDto.Author,
+                Description = bookDto.Description,
+                Shelf = bookDto.Shelf,
+                IsAvailable = bookDto.IsAvailable,
+                Department = bookDto.Department,
+                AssignedYear = bookDto.AssignedYear,
+                Image = bookDto.Image,
+                Categories = bookDto.CategoryNames?.Select(name => new Category { Name = name }).ToList(),
+                Authors = bookDto.AuthorNames?.Select(name => new Author { Name = name }).ToList()
+            };
+
+            var addedBook = await bookRepository.AddBookAsync(book);
+            return MapToResponseDto(addedBook);
+        }
+
+        public async Task<BookResponseDto> UpdateBookAsync(int bookId, BookDto bookDto)
+        {
+            var existingBook = await bookRepository.GetBookByIdAsync(bookId);
+            if (existingBook is null) return null;
+
+            existingBook.Name = bookDto.Name;
+            existingBook.Author = bookDto.Author;
+            existingBook.Description = bookDto.Description;
+            existingBook.Shelf = bookDto.Shelf;
+            existingBook.IsAvailable = bookDto.IsAvailable;
+            existingBook.Department = bookDto.Department;
+            existingBook.AssignedYear = bookDto.AssignedYear;
+            existingBook.Image = bookDto.Image;
+
+            existingBook.Categories = bookDto.CategoryNames?.Select(name => new Category { Name = name }).ToList();
+            existingBook.Authors = bookDto.AuthorNames?.Select(name => new Author { Name = name }).ToList();
+
+            var updatedBook = await bookRepository.UpdateBookAsync(existingBook);
+            return MapToResponseDto(updatedBook);
+        }
+
+        public async Task<bool> DeleteBookAsync(int bookId)
+        {
+            return await bookRepository.DeleteBookAsync(bookId);
+        }
+
+        private static BookResponseDto MapToResponseDto(Book book) => new()
         {
             Id = book.Id,
             Name = book.Name,
             Author = book.Author,
             Description = book.Description,
             Shelf = book.Shelf,
-            State = book.IsAvailable,
+            IsAvailable = book.IsAvailable,
             Department = book.Department,
-            Year = book.AssignedYear
+            AssignedYear = book.AssignedYear,
+            Image = book.Image,
+            CategoryNames = book.Categories?.Select(c => c.Name).ToList(),
+            AuthorNames = book.Authors?.Select(a => a.Name).ToList()
         };
-    }
-
-    public async Task<IEnumerable<BookResponseDto>> GetAllBooksAsync()
-    {
-        var books = await bookRepository.GetBooksAsync();
-        return books.Select(book => new BookResponseDto
-        {
-            Id = book.Id,
-            Name = book.Name,
-            Author = book.Author,
-            Description = book.Description,
-            Shelf = book.Shelf,
-            State = book.IsAvailable,
-            Department = book.Department,
-            Year = book.AssignedYear
-        }).ToList();
-    }
-
-    public async Task<BookResponseDto> UpdateBookAsync(int bookId, BookDto bookDto)
-    {
-        var book = await bookRepository.GetBookByIdAsync(bookId);
-        if (book == null) return null;
-
-        // Update fields
-        book.Name = bookDto.Name;
-        book.Author = bookDto.Author;
-        book.Description = bookDto.Description;
-        book.Shelf = bookDto.Shelf;
-        book.IsAvailable = bookDto.State;
-        book.Department = bookDto.Department;
-        book.AssignedYear = bookDto.Year;
-
-        await bookRepository.UpdateBookAsync(book);
-
-        // Return updated BookResponseDto
-        return new BookResponseDto
-        {
-            Id = book.Id,
-            Name = book.Name,
-            Author = book.Author,
-            Description = book.Description,
-            Shelf = book.Shelf,
-            State = book.IsAvailable,
-            Department = book.Department,
-            Year = book.AssignedYear
-        };
-    }
-
-    public async Task<bool> DeleteBookAsync(int bookId)
-    {
-        var book = await bookRepository.GetBookByIdAsync(bookId);
-        if (book == null) return false;
-
-        await bookRepository.DeleteBookAsync(bookId);
-        return true;
-    }
-
-    public List<Book> GetBooksByAuthor(string author)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Book> GetBooksByTitle(string title)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Book> GetBooksByPublisher(string publisher)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Book> GetBooksByGenre(string genre)
-    {
-        throw new NotImplementedException();
-    }
 }

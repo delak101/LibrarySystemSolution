@@ -1,13 +1,20 @@
-﻿namespace LibrarySystemApp.DTOs;
+﻿using LibrarySystemApp.Models;
+
+namespace LibrarySystemApp.DTOs;
 
 public class BookResponseDto
 {
     public int Id { get; set; }
-    public required string Name { get; set; }
-    public required string Author { get; set; }
-    public required string Description { get; set; }
-    public required string Shelf { get; set; }
-    public bool State { get; set; } = true;
-    public required string Department { get; set; }
-    public int? Year { get; set; }
+    public string Name { get; set; }
+    public string Author { get; set; }
+    public string Description { get; set; }
+    public string Shelf { get; set; }
+    public bool IsAvailable { get; set; }
+    public string Department { get; set; }
+    public int? AssignedYear { get; set; }
+    public string Image { get; set; }
+        
+    public List<string> CategoryNames { get; set; }  // List of category names instead of category objects
+    public List<string> AuthorNames { get; set; }  // List of author names instead of author objects
+
 }

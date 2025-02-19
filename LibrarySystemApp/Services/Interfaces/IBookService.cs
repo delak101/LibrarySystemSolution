@@ -13,6 +13,7 @@ public interface IBookService
     Task<List<BookResponseDto>> GetBooksByAuthorAsync(string author);
     Task<List<BookResponseDto>> GetBooksByAvailabilityAsync(bool isAvailable);
     Task<List<BookResponseDto>> GetBooksByYearAsync(int year);
+    Task<List<BookResponseDto>> GetBooksByDepartmentAsync(string department);
     Task<BookResponseDto> AddBookAsync(BookDto bookDto);
     Task<BookResponseDto> UpdateBookAsync(int bookId, BookDto bookDto);
     Task<bool> DeleteBookAsync(int bookId);

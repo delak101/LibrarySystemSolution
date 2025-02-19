@@ -54,6 +54,13 @@ public class BookRepository(LibraryContext context) : IBookRepository
             .Include(b => b.Authors)
             .ToListAsync();
 
+    public async Task<List<Book>> GetBooksByDepartmentAsync(string department) =>
+        await context.Books
+            .Where(b => b.Department == department)
+            .Include(b => b.Categories)
+            .Include(b => b.Authors)
+            .ToListAsync();
+
     public async Task<Book> AddBookAsync(Book book)
     {
         context.Books.Add(book);

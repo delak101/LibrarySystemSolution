@@ -74,6 +74,26 @@ public class BookController(IBookService bookService) : ControllerBase
 
         return Ok(books);
     }
+    
+    [HttpGet("available/{isAvailable}")]
+    public async Task<ActionResult<List<BookResponseDto>>> GetBooksByAvailability(bool isAvailable)
+    {
+        var books = await bookService.GetBooksByAvailabilityAsync(isAvailable);
+        if (books == null || books.Count == 0)
+            return NotFound("No books available for borrowing.");
+
+        return Ok(books);
+    }
+
+    [HttpGet("department/{department}")]
+    public async Task<ActionResult<List<BookResponseDto>>> GetBooksByDepartment(string department)
+    {
+        var books = await bookService.GetBooksByDepartmentAsync(department);
+        if (books == null || books.Count == 0)
+            return NotFound("No books found for this department.");
+
+        return Ok(books);
+    }
 
     [HttpPut("update/{bookId}")] // PUT: api/book/update/{bookId}
     public async Task<IActionResult> UpdateBook(int bookId, [FromBody] BookDto bookDto)

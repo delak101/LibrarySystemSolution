@@ -50,6 +50,12 @@ public class BookService(IBookRepository bookRepository) : IBookService
             return books.Select(MapToResponseDto).ToList();
         }
 
+        public async Task<List<BookResponseDto>> GetBooksByDepartmentAsync(string department)
+        {
+            var books = await bookRepository.GetBooksByDepartmentAsync(department);
+            return books.Select(MapToResponseDto).ToList();
+        }
+
         public async Task<BookResponseDto> AddBookAsync(BookDto bookDto)
         {
             var book = new Book

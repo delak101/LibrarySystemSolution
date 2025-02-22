@@ -7,7 +7,6 @@ namespace LibrarySystemApp.Services.Implementation;
 
 public class BookService(IBookRepository bookRepository) : IBookService
 {
-
         public async Task<BookResponseDto?> GetBookByIdAsync(int bookId)
         {
             var book = await bookRepository.GetBookByIdAsync(bookId);

@@ -114,8 +114,12 @@ Returns all users in JSON format.
   "assignedYear": int,
   "state": true,
   "image": "string",
-  "categoryNames": ["string"],
-  "authorNames": ["string"]
+  "categoryNames": [
+    "string"
+    ],
+  "authorNames": [
+    "string"
+    ]
 }
 ```
 #### Response:
@@ -164,7 +168,7 @@ Returns all books in list format.
   "shelf": "string",
   "isAvailable": true,
   "department": "string",
-  "assignedYear": int,
+  "assignedYear": 1-4,
   "state": true,
   "image": "string",
   "categoryNames": ["string"],

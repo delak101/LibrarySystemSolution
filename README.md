@@ -2,6 +2,13 @@
 
 ## Base URL: https://fci-library.me
 
+## Authentication
+The application uses JWT-based authentication. Each request to a protected endpoint must include a valid JWT token in the Authorization header.
+
+```
+Authorization: Bearer <your_token>
+```
+
 ---
 
 ## Users

@@ -20,7 +20,6 @@ public class BookDto
     [MaxLength(100)]
     public string? Department { get; set; }
     public int? AssignedYear { get; set; }
-    public bool State { get; set; }
     public string? Image { get; set; }
     
     public string? PublisherName { get; set; }

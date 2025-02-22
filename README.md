@@ -1,404 +1,188 @@
 # Library System API Documentation
 
-## Base URL
-- **IPv4**: http://167.172.105.89
+## Base URL: https://fci-library.me
 
 ## Authentication
 The application uses JWT-based authentication. Each request to a protected endpoint must include a valid JWT token in the Authorization header.
 
 ```
-Authorization: Bearer <token>
+Authorization: Bearer <your_token>
 ```
-
-## Endpoints
-
-### Users
-
-#### 1. Register a User
-- **Endpoint**: `POST /api/user/register`
-- **Description**: Registers a new user.
-- **Request Body**:
-  ```json
-  {
-    "name": "string",
-    "email": "string@text.com",
-    "password": "string",
-    "role": 0,                  #( 0 admin/ 1 student )
-    "department": "IT|CS|IS",
-    "phone": "string",
-    "year": 3                     #(1,2,3,4)
-  }
-  ```
-- **Response**:
-  - **200 OK**:
-    ```json
-    {
-    "message": "User registered successfully."
-    }
-    ```
-    
-  - **400 BAD**:
-    ```json
-    {
-    "message": "User already exists or registration failed."
-    }
-    ```
-    ps: todo -> phone number has to be unique as well. if phone number exist could get response like:
-      - **400 BAD**:
-        ```json
-        {
-            "hint": "problem here",
-            "message": "A user with this email already exists. also problem with AddAsync or savingchanges"
-        }       
-        ```
-
-
-#### 2. Login
-- **Endpoint**: `POST /api/user/login`
-- **Description**: Authenticates a user and returns a JWT token.
-- **Request Body**:
-  ```json
-  {
-    "email": "string",
-    "password": "string"
-  }
-  ```
-- **Response**:
-  - **200 OK**:
-    ```json
-    {
-    "user": {
-        "id": 1,
-        "name": "test",
-        "email": "test@test.com",
-        "role": 0,
-        "department": "IT",
-        "year": 4,
-        "phone": "8934819"
-    },
-    "token": "very secret token"
-    }
-    ```
-  - **401 Unauthorized**:
-    ```json
-    {
-    "message": "User does not exist."
-    }
-    ```
-    ```json
-    {
-        "message": "Invalid password."
-    }
-    ```
-
-#### 3. Get a User
-  ##### .1 ID
-  - **Endpoint**: `GET /api/user/profile/searchid/{id}`
-  - **Description**: Get a user by Id.
-  - **Response**:
-    - **200 OK**:
-      ```json
-      {
-          "id": 2,
-          "name": "test2",
-          "email": "test2@test.com",
-          "role": 0,
-          "department": "IT",
-          "year": 4,
-          "phone": "854519"
-      }
-      ```
-      
-    - **404 Not Found**:
-      - User not found
-      
-  ##### .2 Email
-  - **Endpoint**: `GET /api/user/profile/search/{email}`
-  - **Description**: Get a user by Email.
-  - **Response**:
-    - **200 OK**:
-      ```json
-      {
-          "id": 2,
-          "name": "test2",
-          "email": "test2@test.com",
-          "role": 0,
-          "department": "IT",
-          "year": 4,
-          "phone": "854519"
-      }
-      ```
-      
-    - **404 Not Found**:
-      - User not found
-      
-#### 4. Get All Users
-- **Endpoint**: `GET /api/user/all`
-- **Description**: Authenticates a user and returns a JWT token.
-- **Response**:
-  - **200 OK**:
-    ```json
-    [
-        {
-            "id": 1,
-            "name": "test",
-            "email": "test@test.com",
-            "role": 0,
-            "department": "IT",
-            "year": 4,
-            "phone": "8934819"
-        },
-        {
-            "id": 2,
-            "name": "test2",
-            "email": "test2@test.com",
-            "role": 0,
-            "department": "IT",
-            "year": 4,
-            "phone": "854519"
-        }
-    ]
-    ```
-    
-#### 5. Update a User
-  ##### .1 ID
-  - **Endpoint**: `PUT /api/user/profile/updateid/{id}`
-  - **Description**: Update existing user by id.
-  - **Request Body**:
-    ```json
-    {
-      "name": "test4",
-      "email": "test@test.com",
-      "department": "CS",
-      "phone": "654-4520",
-      "year": 4
-    }
-    ```
-  - **Response**:
-    - **200 OK**:
-      User updated successfully.
-
-    - **404 Not Found**:
-      User not found or update failed.
-      
-    - **500 Internal Server Error**:
-        Error message indicating user with email exist (not handled yet)
-      
-  ##### .2 Email
-  - **Endpoint**: `PUT /api/user/profile/update/{email}`
-  - **Description**: Update existing user by email.
-  - **Request Body**:
-    ```json
-    {
-      "name": "test4",
-      "email": "test@test.com",
-      "department": "CS",
-      "phone": "654-4520",
-      "year": 4
-    }
-    ```
-  - **Response**:
-    - **200 OK**:
-        User updated successfully.
-
-    - **404 Not Found**:
-      User not found or update failed.
-      
-    - **500 Internal Server Error**:
-        Error message indicating user with email exist (not handled yet)
-      
-#### 6. Delete a User
-  ##### ID
-  - **Endpoint**: `DELETE /api/user/profile/deleteid/{id}`
-  - **Description**: Delete existing user by id.
-  - **Response**:
-    - **200 OK**:
-      User not found or update failed
-      
-    - **500 Internal Server Error**:
-      System.InvalidOperationException: User not found.
-      
-  ##### Email
-  - **Endpoint**: `PUT /api/user/profile/update/{email}`
-  - **Description**: Update existing user by email.
-  - **Request Body**:
-    ```json
-    {
-      "name": "test4",
-      "email": "test@test.com",
-      "department": "CS",
-      "phone": "654-4520",
-      "year": 4
-    }
-    ```
-  - **Response**:
-    - **200 OK**:
-      User not found or update failed
-      
-    - **404 Not Found**:
-      User not found.
-
-    - **500 Internal Server Error**:
-        Error message indicating user with email exist (not handled yet)
-  
 
 ---
 
-#### **IN PROGRESS**
+## Users
 
-### Books
-
-#### 1. Add a Book
-- **Endpoint**: `POST /api/books`
-- **Description**: Adds a new book to the library.
-- **Request Body**:
-  ```json
-  {
+### Register User
+**POST** `/api/User/register`
+#### Payload:
+```json
+{
     "name": "string",
-    "author": "string",
-    "description": "string",
-    "shelf": "string",
-    "state": "available|borrowed",
-    "department": "IT|CS|IS",
-    "year": "int"
-  }
-  ```
-- **Response**:
-  - **201 Created**:
-    ```json
-    {
-      "id": "int",
-      "name": "string",
-      "author": "string",
-      "description": "string",
-      "shelf": "string",
-      "state": "string",
-      "department": "string",
-      "year": "int"
-    }
-    ```
+    "email": "string",  
+    "password": "string",
+    "department": "string",  
+    "phone": "string",
+    "year": 1-4
+}
+```
+#### Response:
+- **200 OK**: User Registered Successfully
+- **400 Bad Request**: Email or phone number taken / User exists
+- **404 Not Found**: Server down
 
-#### 2. Get All Books
-- **Endpoint**: `GET /api/books`
-- **Description**: Retrieves all books in the library.
-- **Response**:
-  - **200 OK**:
-    ```json
-    [
-      {
-        "id": "int",
-        "name": "string",
-        "author": "string",
-        "description": "string",
-        "shelf": "string",
-        "state": "string",
-        "department": "string",
-        "year": "int"
-      }
+---
+
+### Login User
+**POST** `/api/user/login`
+#### Payload:
+```json
+{
+    "email": "string",
+    "password": "string"
+}
+```
+#### Response:
+- **200 OK**: Login Successful (Returns user data)
+- **400 Bad Request**: Doesn't Exist / Wrong Password
+
+---
+
+### Get User Profile by ID
+**GET** `/api/user/profile/searchid/{userid}`
+#### Response:
+- **200 OK**: Returns user data
+- **400 Bad Request**: User doesn't exist
+
+### Get User Profile by Email
+**GET** `/api/user/profile/search/{email}`
+(Same response as search by ID)
+
+### Get All Users
+**GET** `/api/user/all`
+Returns all users in JSON format.
+
+---
+
+### Update User Profile by ID
+**PUT** `/api/User/profile/updateid/{userid}`
+#### Payload:
+```json
+{
+  "name": "string",
+  "email": "string",
+  "department": "string",
+  "phone": "string",
+  "year": 1-4
+}
+```
+#### Response:
+- **200 OK**: User updated
+- **400 Bad Request**: User doesn't exist
+
+### Update User Profile by Email
+**PUT** `/api/User/profile/update/{email}`
+(Same response as update by ID)
+
+---
+
+### Delete User by ID
+**DELETE** `/api/user/profile/deleteid/{id}`
+#### Response:
+- **200 OK**: User deleted
+- **400 Bad Request**: User doesn't exist
+
+### Delete User by Email
+**DELETE** `/api/user/profile/delete/{email}`
+(Same response as delete by ID)
+
+---
+
+## Books
+
+### Add a Book
+**POST** `/api/Book/add`
+#### Payload:
+```json
+{
+  "name": "string",
+  "author": "string",
+  "description": "string",
+  "shelf": "string",
+  "isAvailable": true,
+  "department": "string",
+  "assignedYear": int,
+  "state": true,
+  "image": "string",
+  "categoryNames": [
+    "string"
+    ],
+  "authorNames": [
+    "string"
     ]
-    ```
+}
+```
+#### Response:
+- **200 OK**: Book added successfully
 
-### Borrow Requests
+---
 
-#### 1. Create a Borrow Request
-- **Endpoint**: `POST /api/borrow-requests`
-- **Description**: Submits a borrow request for a book.
-- **Request Body**:
-  ```json
-  {
-    "bookId": "int",
-    "studentId": "int",
-    "days": "int"
-  }
-  ```
-- **Response**:
-  - **201 Created**:
-    ```json
-    {
-      "id": "int",
-      "date": "string",
-      "bookId": "int",
-      "studentId": "int",
-      "days": "int"
-    }
-    ```
+### Get Book by ID
+**GET** `/api/book/{id}`
+#### Response:
+- **200 OK**: Returns book details
 
-#### 2. Get Borrow Requests
-- **Endpoint**: `GET /api/borrow-requests`
-- **Description**: Retrieves all borrow requests.
-- **Response**:
-  - **200 OK**:
-    ```json
-    [
-      {
-        "id": "int",
-        "date": "string",
-        "bookId": "int",
-        "studentId": "int",
-        "days": "int"
-      }
-    ]
-    ```
+### Search Book by Name
+**GET** `/api/book/search?name={name}`
+(Same response format as getting book by ID)
 
-### Favorites
+### Search Book by Genre
+**GET** `/api/book/genre?genre={genre}`
 
-#### 1. Add a Favorite Book
-- **Endpoint**: `POST /api/favorites`
-- **Description**: Marks a book as a favorite for a student.
-- **Request Body**:
-  ```json
-  {
-    "studentId": "int",
-    "bookId": "int"
-  }
-  ```
-- **Response**:
-  - **201 Created**:
-    ```json
-    {
-      "studentId": "int",
-      "bookId": "int"
-    }
-    ```
+### Search Book by Author
+**GET** `/api/book/author?author={author}`
 
-#### 2. Get Favorite Books
-- **Endpoint**: `GET /api/favorites/{studentId}`
-- **Description**: Retrieves a student's favorite books.
-- **Response**:
-  - **200 OK**:
-    ```json
-    [
-      {
-        "studentId": "int",
-        "bookId": "int"
-      }
-    ]
-    ```
+### Get Books by Availability
+**GET** `/api/Book/?isAvailable=true`
 
-## Error Responses
+### Get Books by Year
+**GET** `/api/book/year/{id}`
 
-- **400 Bad Request**: Invalid input or request.
-  ```json
-  {
-    "error": "string"
-  }
-  ```
-- **401 Unauthorized**: Authentication failed.
-  ```json
-  {
-    "error": "Unauthorized"
-  }
-  ```
-- **404 Not Found**: Resource not found.
-  ```json
-  {
-    "error": "Not Found"
-  }
-  ```
-- **500 Internal Server Error**: Unexpected error.
-  ```json
-  {
-    "error": "Internal Server Error"
-  }
-  ```
+### Get Books by Department
+**GET** `/api/Book/?department={department}`
+
+### Get All Books
+**GET** `/api/Book`
+Returns all books in list format.
+
+---
+
+### Update a Book
+**PUT** `/api/Book/update/{id}`
+#### Payload:
+```json
+{
+  "name": "string",
+  "author": "string",
+  "description": "string",
+  "shelf": "string",
+  "isAvailable": true,
+  "department": "string",
+  "assignedYear": 1-4,
+  "state": true,
+  "image": "string",
+  "categoryNames": ["string"],
+  "authorNames": ["string"]
+}
+```
+#### Response:
+- **200 OK**: Book updated successfully
+- **404 Not Found**: Book not found or update failed
+
+---
+
+### Delete a Book
+**DELETE** `/api/Book/delete/{id}`
+#### Response:
+- **200 OK**: Book deleted
 

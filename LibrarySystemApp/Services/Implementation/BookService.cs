@@ -61,7 +61,6 @@ public class BookService(IBookRepository bookRepository) : IBookService
             var book = new Book
             {
                 Name = bookDto.Name,
-                Author = bookDto.Author,
                 Description = bookDto.Description,
                 Shelf = bookDto.Shelf,
                 IsAvailable = bookDto.IsAvailable,
@@ -82,7 +81,6 @@ public class BookService(IBookRepository bookRepository) : IBookService
             if (existingBook is null) return null;
 
             existingBook.Name = bookDto.Name;
-            existingBook.Author = bookDto.Author;
             existingBook.Description = bookDto.Description;
             existingBook.Shelf = bookDto.Shelf;
             existingBook.IsAvailable = bookDto.IsAvailable;
@@ -106,7 +104,6 @@ public class BookService(IBookRepository bookRepository) : IBookService
         {
             Id = book.Id,
             Name = book.Name,
-            Author = book.Author,
             Description = book.Description,
             Shelf = book.Shelf,
             IsAvailable = book.IsAvailable,

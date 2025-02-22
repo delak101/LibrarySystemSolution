@@ -5,12 +5,15 @@ namespace LibrarySystemApp.Repositories.Interfaces;
 public interface IUserRepository
 {
     Task<List<User?>> GetAllUsersAsync();
+    
     // Retrieves a user by their ID
     Task<User?> GetUserByIdAsync(int userId);
-
+    
     // Retrieves a user by their email (useful for login and checking uniqueness)
     Task<User?> GetUserByEmailAsync(string email);
 
+    Task<List<User?>> GetUsersByNameAsync(string name);
+    
     // Adds a new user to the database
     Task AddUserAsync(User? user);
 

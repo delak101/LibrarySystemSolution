@@ -9,9 +9,6 @@ public class BookDto
     [MaxLength(500)]
     public string Name { get; set; }
 
-    [MaxLength(256)]
-    public string? Author { get; set; }
-
     [MaxLength(1000)]
     public string? Description { get; set; }
 

@@ -11,9 +11,6 @@ namespace LibrarySystemApp.Models
         [MaxLength(500)] // Ensure the name length is reasonable
         public string Name { get; set; }
         
-        [MaxLength(256)] // Limit author name length
-        public string Author { get; set; }
-
         [MaxLength(1000)] // Limit description length
         public string Description { get; set; }
 

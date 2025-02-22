@@ -27,7 +27,7 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
             Name = registerDto.Name,
             Email = email,
             PasswordHash = hashPassword,
-            Role = registerDto.Role,
+            // Role = registerDto.Role,
             Department = registerDto.Department,
             Phone = registerDto.Phone,
             Year = registerDto.Year

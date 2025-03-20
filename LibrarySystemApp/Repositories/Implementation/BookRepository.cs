@@ -24,7 +24,9 @@ public class BookRepository(LibraryContext context) : IBookRepository
         await context.Books
             .Include(b => b.Categories)
             .Include(b => b.Authors)
+            .Include(b => b.Publisher)
             .ToListAsync();
+    
 
     public async Task<List<Book>> GetBooksByGenreAsync(string genre) =>
         await context.Books

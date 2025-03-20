@@ -115,4 +115,16 @@ public class UserController(IUserService userService, ITokenService tokenService
 
         return NoContent();
     }
+    
+    [HttpDelete("profile/deleteyear/{year}")]
+    public async Task<IActionResult> DeleteUsersByYear(int year)
+    {
+        bool success = await userService.DeleteUsersByYearAsync(year);
+
+        if (!success)
+            return NotFound($"No users found for year {year}");
+
+        return Ok($"All users from year {year} deleted successfully.");
+    }
+
 }

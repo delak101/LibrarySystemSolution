@@ -27,4 +27,6 @@ public interface IUserRepository
     Task UpdateUserByEmailAsync(string email, User user);
     // Delete user by email
     Task DeleteUserByEmailAsync(string email);
+    Task<int> DeleteUsersByYearAsync(int year);
+
 }

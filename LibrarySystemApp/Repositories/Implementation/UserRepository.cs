@@ -57,7 +57,7 @@ namespace LibrarySystemApp.Repositories.Implementation
             }
 
             // Ensure unique email before updating
-            if (await context.Users.AnyAsync(u => u.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase) && u.Id != user.Id))
+            if (await context.Users.AnyAsync(u => u.Email.ToLower() == user.Email.ToLower() && u.Id != user.Id))
             {
                 throw new InvalidOperationException("A user with this email already exists.");
             }
@@ -112,6 +112,14 @@ namespace LibrarySystemApp.Repositories.Implementation
             {
                 throw new InvalidOperationException("User not found.");
             }
+        }
+        public async Task<int> DeleteUsersByYearAsync(int year)
+        {
+            var usersToDelete = await context.Users.Where(u => u.Year == year).ToListAsync();
+            if (!usersToDelete.Any()) return 0;
+
+            context.Users.RemoveRange(usersToDelete);
+            return await context.SaveChangesAsync();
         }
     }
 }

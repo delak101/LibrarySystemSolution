@@ -34,4 +34,8 @@ public interface IUserService
     
     // Delete user by email
     Task<bool> DeleteUserByEmailAsync(string email);
+    
+    // Bulk delete users by year
+    Task<bool> DeleteUsersByYearAsync(int year);
+
 }

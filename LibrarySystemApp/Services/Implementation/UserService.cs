@@ -177,4 +177,11 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
         await userRepository.DeleteUserByEmailAsync(email);
         return true;
     }
+    
+    public async Task<bool> DeleteUsersByYearAsync(int year)
+    {
+        int deletedCount = await userRepository.DeleteUsersByYearAsync(year);
+        return deletedCount > 0;
+    }
+
 }

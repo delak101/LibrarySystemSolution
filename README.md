@@ -98,6 +98,19 @@ Returns all users in JSON format.
 
 ---
 
+### **Bulk Delete Users**
+ 
+**DELETE** `/api/user/deleteyear/{year}`
+  
+#### **Response**:
+ 
+ 
+- **200 OK**: Users deleted successfully
+ 
+- **400 Bad Request**: Some or all users not found
+
+---
+
 ## Books
 
 ### Add a Book
@@ -186,3 +199,44 @@ Returns all books in list format.
 #### Response:
 - **200 OK**: Book deleted
 
+
+---
+
+
+## **Favorites**
+ 
+### **Add to Favorites**
+ 
+**POST** `/api/favorite/{userId}/{bookId}`
+ 
+#### **Response**:
+ 
+ 
+- **200 OK**: Book added to favorites
+ 
+- **400 Bad Request**: Book already favorited
+ 
+
+ 
+### **Remove from Favorites**
+ 
+**DELETE** `/api/favorite/{userId}/{bookId}`
+ 
+#### **Response**:
+ 
+ 
+- **200 OK**: Book removed from favorites
+ 
+- **404 Not Found**: Favorite not found
+ 
+
+ 
+### **Get User’s Favorite Books**
+ 
+**GET** `/api/favorite/{userId}`
+ 
+#### **Response**:
+ 
+ 
+- **200 OK**: Returns a list of favorited books
+ 

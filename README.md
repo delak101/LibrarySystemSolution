@@ -96,7 +96,6 @@ Returns all users in JSON format.
 **DELETE** `/api/user/profile/delete/{email}`
 (Same response as delete by ID)
 
----
 
 ### **Bulk Delete Users**
  
@@ -199,9 +198,7 @@ Returns all books in list format.
 #### Response:
 - **200 OK**: Book deleted
 
-
 ---
-
 
 ## **Favorites**
  
@@ -216,6 +213,7 @@ Returns all books in list format.
  
 - **400 Bad Request**: Book already favorited
  
+---
 
  
 ### **Remove from Favorites**
@@ -227,10 +225,10 @@ Returns all books in list format.
  
 - **200 OK**: Book removed from favorites
  
-- **404 Not Found**: Favorite not found
- 
+- **404 Not Found**: Favorite not found 
 
- 
+---
+
 ### **Get User’s Favorite Books**
  
 **GET** `/api/favorite/{userId}`

@@ -4,26 +4,26 @@ using LibrarySystemApp.Services.Interfaces;
 
 namespace LibrarySystemApp.Services.Implementation;
 
-public class FavoriteService(IFavoriteRepository favoriteRepository) : IFavoriteService
+public class FavoriteService(IFavoriteRepository _favoriteRepository) : IFavoriteService
 {
     public async Task<bool> AddFavoriteAsync(int userId, int bookId)
     {
-        return await favoriteRepository.AddFavoriteAsync(userId, bookId);
+        return await _favoriteRepository.AddFavoriteAsync(userId, bookId);
     }
 
     public async Task<bool> RemoveFavoriteAsync(int userId, int bookId)
     {
-        return await favoriteRepository.RemoveFavoriteAsync(userId, bookId);
+        return await _favoriteRepository.RemoveFavoriteAsync(userId, bookId);
     }
 
     public async Task<bool> IsFavoriteAsync(int userId, int bookId)
     {
-        return await favoriteRepository.IsFavoriteAsync(userId, bookId);
+        return await _favoriteRepository.IsFavoriteAsync(userId, bookId);
     }
 
     public async Task<List<BookDto>> GetUserFavoritesAsync(int userId)
     {
-        var books = await favoriteRepository.GetUserFavoritesAsync(userId);
+        var books = await _favoriteRepository.GetUserFavoritesAsync(userId);
 
         return books.Select(b => new BookDto
         {

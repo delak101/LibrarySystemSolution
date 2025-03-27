@@ -12,7 +12,6 @@ C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\ne
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.Bcl.TimeProvider.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.Build.Locator.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
 C:\Users\Delak\RiderProjects\LibrarySystemSolution\librarysystemapp\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.dll

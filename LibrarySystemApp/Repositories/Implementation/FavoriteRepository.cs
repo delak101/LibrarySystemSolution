@@ -5,21 +5,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Repositories.Implementation;
 
-public class FavoriteRepository(LibraryContext context) : IFavoriteRepository
+public class FavoriteRepository(LibraryContext _context) : IFavoriteRepository
 {
     public async Task<bool> AddFavoriteAsync(int userId, int bookId)
     {
-        if (await context.Favorites.AnyAsync(f => f.UserId == userId && f.BookId == bookId))
+        if (await _context.Favorites.AnyAsync(f => f.UserId == userId && f.BookId == bookId))
             return false; // Already favorited
 
         var favorite = new Favorite { UserId = userId, BookId = bookId };
-        context.Favorites.Add(favorite);
-        return await context.SaveChangesAsync() > 0;
+        _context.Favorites.Add(favorite);
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> RemoveFavoriteAsync(int userId, int bookId)
     {
-        var favorite = await context.Favorites
+        var favorite = await _context.Favorites
             .FirstOrDefaultAsync(f => f.UserId == userId && f.BookId == bookId);
 
         if (favorite == null)
@@ -28,18 +28,18 @@ public class FavoriteRepository(LibraryContext context) : IFavoriteRepository
             return false; // Book is not in favorites
         }
 
-        context.Favorites.Remove(favorite);
-        return await context.SaveChangesAsync() > 0;
+        _context.Favorites.Remove(favorite);
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> IsFavoriteAsync(int userId, int bookId)
     {
-        return await context.Favorites.AnyAsync(f => f.UserId == userId && f.BookId == bookId);
+        return await _context.Favorites.AnyAsync(f => f.UserId == userId && f.BookId == bookId);
     }
 
     public async Task<List<Book>> GetUserFavoritesAsync(int userId)
     {
-        return await context.Favorites
+        return await _context.Favorites
             .Where(f => f.UserId == userId)
             .Select(f => f.Book)
             .ToListAsync();

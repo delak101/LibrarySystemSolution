@@ -6,23 +6,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Repositories.Implementation
 {
-    public class UserRepository(LibraryContext context) : IUserRepository
+    public class UserRepository(LibraryContext _context) : IUserRepository
     {
         // Retrieve all users
         public async Task<List<User?>> GetAllUsersAsync() => 
-        await context.Users.ToListAsync();
+        await _context.Users.ToListAsync();
 
         // Retrieve user by ID
         public async Task<User?> GetUserByIdAsync(int userId) => 
-        await context.Users.FindAsync(userId);
+        await _context.Users.FindAsync(userId);
 
         // Retrieve user by email
         public async Task<User?> GetUserByEmailAsync(string email) =>
-            await context.Users
+            await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == (string?)email.ToLower());
     
         public async Task<List<User?>> GetUsersByNameAsync(string name) =>
-            await context.Users
+            await _context.Users
                 .Where(u => u.Name.Contains(name))
                 .ToListAsync();
 
@@ -33,8 +33,8 @@ namespace LibrarySystemApp.Repositories.Implementation
             
             try
             {
-                await context.Users.AddAsync(user);
-                await context.SaveChangesAsync();
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -50,20 +50,20 @@ namespace LibrarySystemApp.Repositories.Implementation
         // Update user by ID
         public async Task UpdateUserAsync(User? user)
         {
-            var existingUser = await context.Users.FindAsync(user.Id);
+            var existingUser = await _context.Users.FindAsync(user.Id);
             if (existingUser == null)
             {
                 throw new InvalidOperationException("User not found.");
             }
 
             // Ensure unique email before updating
-            if (await context.Users.AnyAsync(u => u.Email.ToLower() == user.Email.ToLower() && u.Id != user.Id))
+            if (await _context.Users.AnyAsync(u => u.Email.ToLower() == user.Email.ToLower() && u.Id != user.Id))
             {
                 throw new InvalidOperationException("A user with this email already exists.");
             }
 
-            context.Users.Update(user);
-            await context.SaveChangesAsync();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
 
         // Update user by email
@@ -80,18 +80,18 @@ namespace LibrarySystemApp.Repositories.Implementation
             existingUser.Phone = user.Phone;
             existingUser.Year = user.Year;
 
-            context.Users.Update(existingUser);
-            await context.SaveChangesAsync();
+            _context.Users.Update(existingUser);
+            await _context.SaveChangesAsync();
         }
 
         // Delete user by ID
         public async Task DeleteUserAsync(int userId)
         {
-            var user = await context.Users.FindAsync(userId);
+            var user = await _context.Users.FindAsync(userId);
             if (user != null)
             {
-                context.Users.Remove(user);
-                await context.SaveChangesAsync();
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
             }
             else
             {
@@ -105,8 +105,8 @@ namespace LibrarySystemApp.Repositories.Implementation
             var user = await GetUserByEmailAsync(email);
             if (user != null)
             {
-                context.Users.Remove(user);
-                await context.SaveChangesAsync();
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
             }
             else
             {
@@ -115,11 +115,11 @@ namespace LibrarySystemApp.Repositories.Implementation
         }
         public async Task<int> DeleteUsersByYearAsync(int year)
         {
-            var usersToDelete = await context.Users.Where(u => u.Year == year).ToListAsync();
+            var usersToDelete = await _context.Users.Where(u => u.Year == year).ToListAsync();
             if (!usersToDelete.Any()) return 0;
 
-            context.Users.RemoveRange(usersToDelete);
-            return await context.SaveChangesAsync();
+            _context.Users.RemoveRange(usersToDelete);
+            return await _context.SaveChangesAsync();
         }
     }
 }

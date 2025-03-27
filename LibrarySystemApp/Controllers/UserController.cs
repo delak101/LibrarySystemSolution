@@ -8,7 +8,7 @@ namespace LibrarySystemApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController(IUserService userService, ITokenService tokenService)
+public class UserController(IUserService _userService)
     : ControllerBase
 {
     [AllowAnonymous]
@@ -17,7 +17,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     {
         try
         {
-            var isRegistered = await userService.RegisterAsync(registerDto);
+            var isRegistered = await _userService.RegisterAsync(registerDto);
             if (!isRegistered)
             {
                 return BadRequest(new { Message = "User already exists or registration failed." });
@@ -42,7 +42,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     {
         try
         {
-            var response = await userService.LoginAsync(loginDto);
+            var response = await _userService.LoginAsync(loginDto);
             return Ok(response);
 
         }
@@ -59,14 +59,14 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpGet("all")] // GET: api/user/all
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
-        var users = await userService.GetAllUsersAsync();
+        var users = await _userService.GetAllUsersAsync();
         return Ok(users);
     }
 
     [HttpGet("profile/searchid/{userId}")] // GET findUser user/profile/search/{serId}
     public async Task<ActionResult<UserDto>> GetUserProfile(int userId)
     {
-        var user = await userService.GetUserProfileAsync(userId);
+        var user = await _userService.GetUserProfileAsync(userId);
         if (user == null) return NotFound("User not found");
         
         return Ok(user);
@@ -75,7 +75,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpPut("profile/updateid/{userId}")] // PUT editUser user/profile/update/{userId}
     public async Task<IActionResult> UpdateUserProfile(int userId, UpdateUserDto updateUserDto)
     {
-        var updatedUser = await userService.UpdateUserProfileAsync(userId, updateUserDto);
+        var updatedUser = await _userService.UpdateUserProfileAsync(userId, updateUserDto);
         if (!updatedUser) return NotFound("User not found or update failed");
         
         return Ok("User updated successfully.");
@@ -85,7 +85,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpDelete("profile/deleteid/{userId}")] // DELETE deleteUser user/profile/delete/{userId}
     public async Task<IActionResult> DeleteUser(int userId)
     {
-        var result = await userService.DeleteUserAsync(userId);
+        var result = await _userService.DeleteUserAsync(userId);
         if (!result) return NotFound("User not found");
 
         return NoContent();
@@ -94,7 +94,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpGet("profile/search/{email}")] // GET findUser user/profile/search/{email}
     public async Task<ActionResult<UserDto>> GetUserProfile(string email)
     {
-        var user = await userService.GetUserProfileByEmailAsync(email);
+        var user = await _userService.GetUserProfileByEmailAsync(email);
         if (user == null) return NotFound("User not found");
         
         return Ok(user);
@@ -103,7 +103,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpPut("profile/update/{email}")] // PUT editUser user/profile/update/{email}
     public async Task<IActionResult> UpdateUserProfile(string email, UpdateUserDto updateUserDto)
     {
-        var updatedUser = await userService.UpdateUserProfileByEmailAsync(email, updateUserDto);
+        var updatedUser = await _userService.UpdateUserProfileByEmailAsync(email, updateUserDto);
         if (!updatedUser) return NotFound("User not found or update failed");
         
         return Ok("User updated successfully.");
@@ -112,7 +112,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpDelete("profile/delete/{email}")] // DELETE deleteUser user/profile/delete/{email}
     public async Task<IActionResult> DeleteUser(string email)
     {
-        var result = await userService.DeleteUserByEmailAsync(email);
+        var result = await _userService.DeleteUserByEmailAsync(email);
         if (!result) return NotFound("User not found");
 
         return NoContent();
@@ -121,7 +121,7 @@ public class UserController(IUserService userService, ITokenService tokenService
     [HttpDelete("profile/deleteyear/{year}")]
     public async Task<IActionResult> DeleteUsersByYear(int year)
     {
-        bool success = await userService.DeleteUsersByYearAsync(year);
+        bool success = await _userService.DeleteUsersByYearAsync(year);
 
         if (!success)
             return NotFound($"No users found for year {year}");

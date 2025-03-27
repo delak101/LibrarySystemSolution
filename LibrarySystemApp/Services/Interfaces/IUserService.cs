@@ -23,9 +23,6 @@ public interface IUserService
     // Deletes a user account
     Task<bool> DeleteUserAsync(int userId);
     
-    // Verify user password
-    bool VerifyPassword(string inputPassword, string storedHash, string storedSalt);
-
     // Retrieve user by email
     Task<UserDto?> GetUserProfileByEmailAsync(string email);
 

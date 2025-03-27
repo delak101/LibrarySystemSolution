@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Services.Implementation;
 
-public class UserService(IUserRepository userRepository, ITokenService tokenService) : IUserService
+public class UserService(IUserRepository _userRepository, ITokenService _tokenService) : IUserService
 {
     public async Task<bool> RegisterAsync(RegisterDto registerDto)
     {
         var email = registerDto.Email.ToLower();
         
         // Check if user already exists
-        if (await userRepository.GetUserByEmailAsync(email).ConfigureAwait(false) != null)
+        if (await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(false) != null)
         {
             return false; // User already exists
         }
@@ -34,7 +34,7 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
         };
         try
         {
-            await userRepository.AddUserAsync(user);
+            await _userRepository.AddUserAsync(user);
             return true;
         }
         catch (DbUpdateException ex)
@@ -47,7 +47,7 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
 
     public async Task<UserResponseDto> LoginAsync(LoginDto loginDto)
     {
-        var user = await userRepository.GetUserByEmailAsync(loginDto.Email.ToLower());
+        var user = await _userRepository.GetUserByEmailAsync(loginDto.Email.ToLower());
         if (user == null) 
             throw new UnauthorizedAccessException("User does not exist.");
 
@@ -57,7 +57,7 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
             throw new UnauthorizedAccessException("Invalid password.");
             
         // Generate and return JWT token
-        var token = tokenService.CreateToken(user);
+        var token = _tokenService.CreateToken(user);
         
         return new UserResponseDto
         {
@@ -76,10 +76,9 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
 
     }
     
-
     public async Task<List<UserDto>> GetAllUsersAsync()
     {
-        var users = await userRepository.GetAllUsersAsync();
+        var users = await _userRepository.GetAllUsersAsync();
         return users.Select(user => new UserDto
         {
             Id = user.Id,
@@ -94,7 +93,7 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
     
     public async Task<UserDto> GetUserProfileAsync(int userId)
     {
-        var user = await userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetUserByIdAsync(userId);
         if (user == null) return null;
 
         return new UserDto
@@ -111,35 +110,29 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
 
     public async Task<bool> UpdateUserProfileAsync(int userId, UpdateUserDto updateUserDto)
     {
-        var user = await userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetUserByIdAsync(userId);
 
         // Update only the modified fields
         user.Name = updateUserDto.Name ?? user.Name;
         user.Email = updateUserDto.Email ?? user.Email;
         user.Department = updateUserDto.Department ?? user.Department;
-        user.Year = updateUserDto.Year; // can't use ?? operator with int
+        user.Year = updateUserDto.Year ?? user.Year;
         user.Phone = updateUserDto.Phone ?? user.Phone;
-        await userRepository.UpdateUserAsync(user);
+        await _userRepository.UpdateUserAsync(user);
         return true;
     }
 
     public async Task<bool> DeleteUserAsync(int userId)
     {
-        var user = await userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetUserByIdAsync(userId);
 
-        await userRepository.DeleteUserAsync(userId);
+        await _userRepository.DeleteUserAsync(userId);
         return true;
     }
     
-    public bool VerifyPassword(string inputPassword, string storedHash, string storedSalt)
-    {
-        var hashInput = BCrypt.Net.BCrypt.HashPassword(inputPassword, storedSalt);
-        return hashInput == storedHash;
-    }
-
     public async Task<UserDto?> GetUserProfileByEmailAsync(string email)
     {
-        var user = await userRepository.GetUserByEmailAsync(email);
+        var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return null;
 
         return new UserDto
@@ -156,31 +149,30 @@ public class UserService(IUserRepository userRepository, ITokenService tokenServ
 
     public async Task<bool> UpdateUserProfileByEmailAsync(string email, UpdateUserDto updateUserDto)
     {
-        var user = await userRepository.GetUserByEmailAsync(email);
+        var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return false;
 
         user.Name = updateUserDto.Name ?? user.Name;
         user.Email = updateUserDto.Email ?? user.Email;
         user.Department = updateUserDto.Department ?? user.Department;
         user.Phone = updateUserDto.Phone ?? user.Phone;
-        user.Year = updateUserDto.Year;
-
-        await userRepository.UpdateUserByEmailAsync(email, user);
+        user.Year = updateUserDto.Year?? user.Year;
+        await _userRepository.UpdateUserByEmailAsync(email, user);
         return true;
     }
 
     public async Task<bool> DeleteUserByEmailAsync(string email)
     {
-        var user = await userRepository.GetUserByEmailAsync(email);
+        var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return false;
 
-        await userRepository.DeleteUserByEmailAsync(email);
+        await _userRepository.DeleteUserByEmailAsync(email);
         return true;
     }
     
     public async Task<bool> DeleteUsersByYearAsync(int year)
     {
-        int deletedCount = await userRepository.DeleteUsersByYearAsync(year);
+        int deletedCount = await _userRepository.DeleteUsersByYearAsync(year);
         return deletedCount > 0;
     }
 

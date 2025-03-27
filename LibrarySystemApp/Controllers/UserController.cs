@@ -1,6 +1,7 @@
 ﻿using LibrarySystemApp.DTOs;
 using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystemApp.Controllers;
@@ -10,6 +11,7 @@ namespace LibrarySystemApp.Controllers;
 public class UserController(IUserService userService, ITokenService tokenService)
     : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost("register")] // POST : user/register
     public async Task<ActionResult<User>> Register(RegisterDto registerDto)
     {
@@ -34,6 +36,7 @@ public class UserController(IUserService userService, ITokenService tokenService
         }
     }
 
+    [AllowAnonymous]
     [HttpPost("login")] // POST : user/login
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
@@ -60,7 +63,6 @@ public class UserController(IUserService userService, ITokenService tokenService
         return Ok(users);
     }
 
-    // [Authorize(policy:"AdminOnly")]
     [HttpGet("profile/searchid/{userId}")] // GET findUser user/profile/search/{serId}
     public async Task<ActionResult<UserDto>> GetUserProfile(int userId)
     {
@@ -79,7 +81,7 @@ public class UserController(IUserService userService, ITokenService tokenService
         return Ok("User updated successfully.");
         // return await GetUserProfile(userId);
     }
-    // [Authorize(policy:"AdminOnly")]
+
     [HttpDelete("profile/deleteid/{userId}")] // DELETE deleteUser user/profile/delete/{userId}
     public async Task<IActionResult> DeleteUser(int userId)
     {
@@ -125,6 +127,46 @@ public class UserController(IUserService userService, ITokenService tokenService
             return NotFound($"No users found for year {year}");
 
         return Ok($"All users from year {year} deleted successfully.");
+    }
+
+    [HttpGet("debug-claims")]
+    public IActionResult DebugClaims()
+    {
+        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+        return Ok(claims);
+    }
+
+    [HttpGet("debug-auth")]
+    public IActionResult DebugAuth()
+    {
+        var headers = Request.Headers.Select(h => new { h.Key, h.Value }).ToList();
+
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Unauthorized(new
+            {
+                message = "Authentication failed! Token might be invalid.",
+                headers
+            });
+        }
+
+        return Ok(new { message = "Authentication successful!", user = User.Identity.Name });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin-only")]
+    public IActionResult AdminOnly()
+    {
+        return Ok("Access granted: You are an admin!");
+    }
+
+    [Authorize]
+    [HttpGet("token")]
+    public IActionResult GetToken()
+    {
+        var token = Request.Headers["Authorization"];
+        Console.WriteLine($"🔹 Received Token: {token}");
+        return Ok(new { Token = token });
     }
 
 }

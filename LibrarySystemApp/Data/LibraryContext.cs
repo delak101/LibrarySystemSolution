@@ -120,10 +120,6 @@ namespace LibrarySystemApp.Data
 
             modelBuilder.Entity<Review>()
                 .HasIndex(r => new { r.UserId, r.BookId });
-
-            // Borrow entity configuration
-            modelBuilder.Entity<Borrow>()
-                .HasIndex(b => new { b.UserId, b.BookId, b.BorrowDate });
         }
     }
 }

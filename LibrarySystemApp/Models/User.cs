@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LibrarySystemApp.Models
 {
@@ -17,7 +18,7 @@ namespace LibrarySystemApp.Models
         [MinLength(8)] // Ensure password security
         public required string PasswordHash { get; set; }
 
-        public UserRole Role { get; set; } = 0;
+        public string Role { get; set; } = "Admin";
 
         [MaxLength(100)] // Limit department name length
         public required string Department { get; set; }  // GENERAL, IT, CS, IS, DS, AI, GIS, BIO
@@ -25,16 +26,10 @@ namespace LibrarySystemApp.Models
         [Phone]
         public required string Phone { get; set; } // Changed to string to support formatting
 
-        public int Year { get; set; }
+        public required int Year { get; set; }
         
         public ICollection<Favorite> Favorites { get; set; }
         public ICollection<Borrow> Borrows { get; set; }
         public ICollection<Review> Reviews { get; set; }
     }
-}
-
-public enum UserRole
-{
-    Admin = 0,
-    Student = 1
 }

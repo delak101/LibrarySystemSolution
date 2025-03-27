@@ -8,33 +8,24 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 
 namespace LibrarySystemApp.Services.Implementation;
 
-public class TokenService(IConfiguration config) : ITokenService
+public class TokenService(IConfiguration _config) : ITokenService
 {
-    private readonly SymmetricSecurityKey _key = new(Encoding.UTF8.GetBytes(config["TokenKey"] ?? throw new InvalidOperationException()));
-
     public string CreateToken(User user)
     {
+        var _key = Encoding.UTF8.GetBytes(_config["Jwt:TokenKey"]);
         var claims = new[]
         {
-            // new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            // new Claim("role", user.Role), //Make sure that the values of the user.Role match the exact values in the policies (e.g., "admin" and "student")
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("role", user.Role.ToString()),
-            new Claim("department", user.Department)
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
         };
-        
-        var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddDays(7),
-            SigningCredentials = creds
-        };
+        var token = new JwtSecurityToken(
+            _config["Jwt:Issuer"],
+            _config["Jwt:Audience"],
+            claims,
+            expires: DateTime.UtcNow.AddDays(7),
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256)
+        );
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        
-        return tokenHandler.WriteToken(token);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

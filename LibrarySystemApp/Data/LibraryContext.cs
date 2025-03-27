@@ -43,7 +43,7 @@ namespace LibrarySystemApp.Data
 
             modelBuilder.Entity<User>()
                 .Property(u => u.Department)
-                .HasMaxLength(100);
+                .HasMaxLength(25);
 
             modelBuilder.Entity<User>()
                 .Property(u => u.Year)
@@ -83,7 +83,7 @@ namespace LibrarySystemApp.Data
                 .HasOne(b => b.Publisher)
                 .WithMany(p => p.Books)
                 .HasForeignKey(b => b.PublisherId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull); // If a publisher is deleted, books remain
 
             // Relationships and many-to-many setups
             modelBuilder.Entity<Book>()
@@ -96,7 +96,28 @@ namespace LibrarySystemApp.Data
                 .WithMany(a => a.Books)
                 .UsingEntity(j => j.ToTable("AuthorBooks"));
 
-            // Review entity configuration
+            // User-Borrow Relationship
+            modelBuilder.Entity<Borrow>()
+                .HasOne(b => b.User)
+                .WithMany(u => u.Borrows)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Book-Borrow Relationship
+            modelBuilder.Entity<Borrow>()
+                .HasOne(b => b.Book)
+                .WithMany(book => book.Borrows)
+                .HasForeignKey(b => b.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Index Optimizations
+            modelBuilder.Entity<Borrow>()
+                .HasIndex(b => new { b.UserId, b.BookId }) // Faster borrow lookup
+                .IsUnique(false); // Multiple borrow records allowed over time
+
+            modelBuilder.Entity<Borrow>()
+                .HasIndex(b => b.BookId); // Faster queries for book borrow records
+
             modelBuilder.Entity<Review>()
                 .HasIndex(r => new { r.UserId, r.BookId });
 

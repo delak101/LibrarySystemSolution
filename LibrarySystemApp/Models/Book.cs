@@ -17,7 +17,7 @@ namespace LibrarySystemApp.Models
         [MaxLength(50)] // Ensure shelf identifier is concise
         public string Shelf { get; set; }
 
-        public bool IsAvailable { get; set; } // Renamed from `State` to `IsAvailable` for clarity
+        public bool IsAvailable { get; set; } = true; // Default to available
 
         [MaxLength(100)]
         public string Department { get; set; }  // The department using the book (IT, CS, etc.)

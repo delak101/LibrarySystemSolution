@@ -43,7 +43,7 @@ Authorization: Bearer <your_token>
 }
 ```
 #### Response:
-- **200 OK**: Login Successful (Returns user data)
+- **200 OK**: Login Successful (Returns user data With **TOKEN**) use token for authorized access
 - **400 Bad Request**: Doesn't Exist / Wrong Password
 
 ---
@@ -99,13 +99,9 @@ Returns all users in JSON format.
 
 ### **Bulk Delete Users**
  
-**DELETE** `/api/user/deleteyear/{year}`
-  
-#### **Response**:
- 
- 
-- **200 OK**: Users deleted successfully
- 
+**DELETE** `/api/user/deleteyear/{year}`  
+#### **Response**: 
+- **200 OK**: Users deleted successfully 
 - **400 Bad Request**: Some or all users not found
 
 ---
@@ -123,7 +119,7 @@ Returns all users in JSON format.
   "shelf": "string",
   "isAvailable": true,
   "department": "string",
-  "assignedYear": int,
+  "assignedYear": 1-4,
   "state": true,
   "image": "string",
   "categoryNames": [
@@ -144,28 +140,30 @@ Returns all users in JSON format.
 #### Response:
 - **200 OK**: Returns book details
 
-### Search Book by Name
-**GET** `/api/book/search?name={name}`
-(Same response format as getting book by ID)
+### Search Books
+**GET** `/api/book/search?name={name}`  
+**GET** `/api/book/genre?genre={genre}`  
+**GET** `/api/book/author?author={author}`  
 
-### Search Book by Genre
-**GET** `/api/book/genre?genre={genre}`
+#### Response:
+- **200 OK**: Returns books matching the search criteria.
 
-### Search Book by Author
-**GET** `/api/book/author?author={author}`
+---
 
 ### Get Books by Availability
-**GET** `/api/Book/?isAvailable=true`
+**GET** `/api/book?isAvailable=true`
 
 ### Get Books by Year
-**GET** `/api/book/year/{id}`
+**GET** `/api/book/year/{year}`
 
 ### Get Books by Department
-**GET** `/api/Book/?department={department}`
+**GET** `/api/book?department={department}`
 
 ### Get All Books
 **GET** `/api/Book`
-Returns all books in list format.
+
+#### Response:
+- **200 OK**: Returns all books in JSON format.
 
 ---
 
@@ -200,41 +198,83 @@ Returns all books in list format.
 
 ---
 
+## Borrow Requests
+
+### Request to Borrow a Book
+**POST** `/api/borrow/request`
+#### Payload:
+```json
+{
+  "userId": 0,
+  "bookId": 0,
+  "dueDate": "$DateTime [yyyy/mm/dd]"
+}
+```
+#### Response:
+- **200 OK**: Request submitted.
+- **400 Bad Request**: Book not available.
+
+---
+
+### View Borrow Requests
+**GET** `/api/borrow/requests`
+#### Response:
+- **200 OK**: Returns a list of pending borrow requests.
+
+### Approve Borrow Request
+**PUT** `/api/borrow/approve/{requestId}`
+#### Response:
+- **200 OK**: Request approved, book marked as borrowed.
+
+### Deny Borrow Request
+**DELETE** `/api/borrow/deny/{requestId}`
+#### Response:
+- **200 OK**: Request denied.
+
+---
+
+### Return a Book
+**PUT** `/api/borrow/return/{bookId}`
+#### Response:
+- **200 OK**: Book returned successfully.
+
+---
+
+### View Borrow History
+**GET** `/api/borrow/history/{userId}`
+#### Response:
+- **200 OK**: Returns the user's borrow history.
+
+### Get Overdue Books
+**GET** `/api/borrow/overdue`
+#### Response:
+- **200 OK**: Returns a list of overdue books.
+
+---
+
 ## **Favorites**
  
 ### **Add to Favorites**
  
 **POST** `/api/favorite/{userId}/{bookId}`
- 
-#### **Response**:
- 
- 
+#### **Response**: 
 - **200 OK**: Book added to favorites
- 
 - **400 Bad Request**: Book already favorited
  
 ---
 
  
 ### **Remove from Favorites**
- 
 **DELETE** `/api/favorite/{userId}/{bookId}`
  
-#### **Response**:
- 
- 
-- **200 OK**: Book removed from favorites
- 
+#### **Response**: 
+- **200 OK**: Book removed from favorites 
 - **404 Not Found**: Favorite not found 
 
 ---
 
-### **Get User’s Favorite Books**
- 
-**GET** `/api/favorite/{userId}`
- 
-#### **Response**:
- 
- 
+### **Get User’s Favorite Books** 
+**GET** `/api/favorite/{userId}` 
+#### **Response**: 
 - **200 OK**: Returns a list of favorited books
  

@@ -35,7 +35,9 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
-                    UserName = b.User.Name,
+                    StudentId = b.User.Id,
+                    StudentName = b.User.Name,
+                    BookId = b.Book.Id,
                     BookTitle = b.Book.Name,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
@@ -53,7 +55,9 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
-                    UserName = b.User.Name,
+                    StudentId = b.User.Id,
+                    StudentName = b.User.Name,
+                    BookId = b.Book.Id,
                     BookTitle = b.Book.Name,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
@@ -71,7 +75,9 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
-                    UserName = b.User.Name,
+                    StudentId = b.User.Id,
+                    StudentName = b.User.Name,
+                    BookId = b.Book.Id,
                     BookTitle = b.Book.Name,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
@@ -89,7 +95,9 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto
                 {
                     Id = b.Id,
-                    UserName = b.User.Name,
+                    StudentId = b.User.Id,
+                    StudentName = b.User.Name,
+                    BookId = b.Book.Id,
                     BookTitle = b.Book.Name,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,

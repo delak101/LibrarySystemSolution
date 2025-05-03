@@ -16,7 +16,9 @@ namespace LibrarySystemApp.Services
                 BookId = bookId,
                 BorrowDate = borrowDate,
                 DueDate = dueDate,
-                Status = BorrowStatus.Pending
+                Status = BorrowStatus.Pending,
+                User = await _context.Users.FindAsync(userId),
+                Book = await _context.Books.FindAsync(bookId)
             };
 
             return await _borrowRepository.AddBorrowAsync(borrow);

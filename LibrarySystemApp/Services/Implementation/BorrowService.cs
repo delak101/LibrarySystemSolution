@@ -3,6 +3,7 @@ using LibrarySystemApp.DTOs;
 using LibrarySystemApp.Models;
 using LibrarySystemApp.Repositories.Interfaces;
 using LibrarySystemApp.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Services
 {
@@ -10,6 +11,19 @@ namespace LibrarySystemApp.Services
     {
         public async Task<Borrow> RequestBorrowAsync(int userId, int bookId, DateTime borrowDate, DateTime dueDate)
         {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException($"User with ID {userId} does not exist.");
+            
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null)
+                throw new InvalidOperationException($"Book with ID {bookId} does not exist.");
+            
+            var isBookAlreadyBorrowed = await _context.Borrows
+            .AnyAsync(b => b.BookId == bookId && b.Status == BorrowStatus.Approved);
+            if (isBookAlreadyBorrowed)
+                throw new InvalidOperationException($"Book with ID {bookId} is currently borrowed and not available.");
+
             var borrow = new Borrow
             {
                 UserId = userId,
@@ -17,8 +31,6 @@ namespace LibrarySystemApp.Services
                 BorrowDate = borrowDate,
                 DueDate = dueDate,
                 Status = BorrowStatus.Pending,
-                User = await _context.Users.FindAsync(userId),
-                Book = await _context.Books.FindAsync(bookId)
             };
 
             return await _borrowRepository.AddBorrowAsync(borrow);
@@ -40,7 +52,7 @@ namespace LibrarySystemApp.Services
             // Ensure both are updated successfully
             await _borrowRepository.UpdateBorrowAsync(borrow);
             await _context.SaveChangesAsync();
-            return true; // ✅ Always return true if successful
+            return true; // Always return true if successful
         }
 
         public async Task<bool> DenyBorrowAsync(int borrowId)
@@ -70,7 +82,7 @@ namespace LibrarySystemApp.Services
             // Ensure both are updated successfully
             await _borrowRepository.UpdateBorrowAsync(borrow);
             await _context.SaveChangesAsync();
-            return true; // ✅ Always return true if successful
+            return true; // Always return true if successful
         }
 
         public async Task<List<BorrowDto>> GetPendingRequestsAsync()

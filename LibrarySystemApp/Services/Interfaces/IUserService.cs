@@ -35,4 +35,9 @@ public interface IUserService
     // Bulk delete users by year
     Task<bool> DeleteUsersByYearAsync(int year);
 
+    Task<bool> InitiatePasswordReset(string email);
+
+    Task<bool> ResetPassword(string token, string newPassword);
+
+
 }

@@ -17,22 +17,25 @@ public class UserController(IUserService _userService)
     {
         try
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var isRegistered = await _userService.RegisterAsync(registerDto);
             if (!isRegistered)
             {
-                return BadRequest(new { Message = "User already exists or registration failed." });
+                return BadRequest(new { Message = "User already exists." });
             }
             return Ok(new { Message = "User registered successfully." });
         }
         catch (InvalidOperationException ex)
         {
-            // Log exception (e.g., logger.LogError(ex, "Invalid operation during registration"))
-            return BadRequest(new { hint = "problem here", Message = ex.Message });
+            return BadRequest(new { Message = ex.Message });
         }
         catch (Exception ex)
         {
-            // Log exception (e.g., logger.LogError(ex, "Internal server error"))
-            return StatusCode(500, new { Message = "An internal server error occurred.", Details = ex.Message });
+            // Log the exception here
+            return StatusCode(500, new { Message = "An internal server error occurred." });
         }
     }
 
@@ -167,6 +170,33 @@ public class UserController(IUserService _userService)
         var token = Request.Headers["Authorization"];
         Console.WriteLine($"🔹 Received Token: {token}");
         return Ok(new { Token = token });
+    }
+    
+    
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
+    {
+        var result = await _userService.InitiatePasswordReset(request.Email);
+        if (!result)
+        {
+            return BadRequest("Email not found");
+        }
+
+        // In a real application, you would send an email here
+        // For testing, you can return the token in the response
+        return Ok("Password reset initiated. Please check your email.");
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
+    {
+        var result = await _userService.ResetPassword(request.Token, request.NewPassword);
+        if (!result)
+        {
+            return BadRequest("Invalid or expired token");
+        }
+
+        return Ok("Password reset successful");
     }
 
 }

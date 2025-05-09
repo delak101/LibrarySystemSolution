@@ -2,11 +2,15 @@
 
 public class RegisterDto
 {
-    public required string Name { get; set; }
-    public required string Email { get; set; }
-    public required string Password { get; set; }
+    public string pfp { get; set; }
+    public required string name { get; set; }
+    public required string email { get; set; }
+    public string? studentEmail { get; set; }
+    public required string password { get; set; }
+    public int nationalId { get; set; }
     // public required UserRole Role { get; set; }  // Admin, Student
-    public required string Department { get; set; }  // IT, CS, IS
-    public required string Phone { get; set; } // Ensure Phone is required
-    public int Year { get; set; }  // Student's academic year, nullable for non-student roles
+    public required string department { get; set; }  // IT, CS, IS
+    public required string phone { get; set; }
+    public required bool termsAccepted { get; set; }
+    public int year { get; set; }  // Student's academic year, nullable for non-student roles
 }

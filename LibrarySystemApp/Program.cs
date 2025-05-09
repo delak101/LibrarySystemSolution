@@ -26,9 +26,6 @@ builder.Services.AddSwaggerGen();
 // Add Mapster
 MappingConfig.RegisterMappings();
 
-// Add the controllers service
-builder.Services.AddControllers();
-
 builder.Services.AddDbContext<LibraryContext>(opt => 
 {
     // opt.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")); // DefaultConnection or AZURE_SQL_CONNECTIONSTRING
@@ -87,6 +84,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
+builder.Services.AddScoped<IEmailService, SendGridEmailService>();
 
 builder.Logging.AddConsole();
 

@@ -35,7 +35,7 @@ namespace LibrarySystemApp.Models
         
         public required bool TermsAccepted { get; set; }
         
-        public string PasswordResetToken { get; set; }
+        public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetTokenExpiry { get; set; }
 
         public ICollection<Favorite> Favorites { get; set; }

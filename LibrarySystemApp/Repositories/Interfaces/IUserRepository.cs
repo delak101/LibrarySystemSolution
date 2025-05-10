@@ -12,7 +12,7 @@ public interface IUserRepository
     // Retrieves a user by their email (useful for login and checking uniqueness)
     Task<User?> GetUserByEmailAsync(string email);
 
-    Task<List<User?>> GetUsersByNameAsync(string name);
+    Task<List<User?>> GetUserByNameAsync(string name);
     
     // Adds a new user to the database
     Task AddUserAsync(User? user);

@@ -21,11 +21,13 @@ public class UserController(IUserService _userService)
             {
                 return BadRequest(ModelState);
             }
+
             var isRegistered = await _userService.RegisterAsync(registerDto);
             if (!isRegistered)
             {
                 return BadRequest(new { Message = "User already exists." });
             }
+
             return Ok(new { Message = "User registered successfully." });
         }
         catch (InvalidOperationException ex)
@@ -47,7 +49,6 @@ public class UserController(IUserService _userService)
         {
             var response = await _userService.LoginAsync(loginDto);
             return Ok(response);
-
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -71,18 +72,49 @@ public class UserController(IUserService _userService)
     {
         var user = await _userService.GetUserProfileAsync(userId);
         if (user == null) return NotFound("User not found");
-        
+
         return Ok(user);
     }
 
+    [HttpGet("profile/search/{email}")] // GET findUser user/profile/search/{email}
+    public async Task<ActionResult<UserDto>> GetUserProfile(string email)
+    {
+        var user = await _userService.GetUserProfileByEmailAsync(email);
+        if (user == null) return NotFound("User not found");
+
+        return Ok(user);
+    }
+
+    [HttpGet("profile/search/{name}")] // GET: findUser api/user/profile/search/name/{name}
+    public async Task<ActionResult<UserDto?>> GetUserByName(string name)
+    {
+        var user = await _userService.GetUserProfileByNameAsync(name);
+
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        return Ok(user);
+    }
+    
     [HttpPut("profile/updateid/{userId}")] // PUT editUser user/profile/update/{userId}
     public async Task<IActionResult> UpdateUserProfile(int userId, UpdateUserDto updateUserDto)
     {
         var updatedUser = await _userService.UpdateUserProfileAsync(userId, updateUserDto);
         if (!updatedUser) return NotFound("User not found or update failed");
-        
+
         return Ok("User updated successfully.");
         // return await GetUserProfile(userId);
+    }
+    
+    [HttpPut("profile/update/{email}")] // PUT editUser user/profile/update/{email}
+    public async Task<IActionResult> UpdateUserProfile(string email, UpdateUserDto updateUserDto)
+    {
+        var updatedUser = await _userService.UpdateUserProfileByEmailAsync(email, updateUserDto);
+        if (!updatedUser) return NotFound("User not found or update failed");
+
+        return Ok("User updated successfully.");
     }
 
     [HttpDelete("profile/deleteid/{userId}")] // DELETE deleteUser user/profile/delete/{userId}
@@ -94,24 +126,6 @@ public class UserController(IUserService _userService)
         return NoContent();
     }
 
-    [HttpGet("profile/search/{email}")] // GET findUser user/profile/search/{email}
-    public async Task<ActionResult<UserDto>> GetUserProfile(string email)
-    {
-        var user = await _userService.GetUserProfileByEmailAsync(email);
-        if (user == null) return NotFound("User not found");
-        
-        return Ok(user);
-    }
-
-    [HttpPut("profile/update/{email}")] // PUT editUser user/profile/update/{email}
-    public async Task<IActionResult> UpdateUserProfile(string email, UpdateUserDto updateUserDto)
-    {
-        var updatedUser = await _userService.UpdateUserProfileByEmailAsync(email, updateUserDto);
-        if (!updatedUser) return NotFound("User not found or update failed");
-        
-        return Ok("User updated successfully.");
-    }
-
     [HttpDelete("profile/delete/{email}")] // DELETE deleteUser user/profile/delete/{email}
     public async Task<IActionResult> DeleteUser(string email)
     {
@@ -120,7 +134,7 @@ public class UserController(IUserService _userService)
 
         return NoContent();
     }
-    
+
     [HttpDelete("profile/deleteyear/{year}")]
     public async Task<IActionResult> DeleteUsersByYear(int year)
     {
@@ -172,7 +186,6 @@ public class UserController(IUserService _userService)
         return Ok(new { Token = token });
     }
     
-    
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
     {
@@ -198,5 +211,4 @@ public class UserController(IUserService _userService)
 
         return Ok("Password reset successful");
     }
-
 }

@@ -13,6 +13,9 @@ public interface IUserService
 
     // Retrieves user details for profile display
     Task<UserDto> GetUserProfileAsync(int userId);
+    
+    // Retrive a user by name
+    Task<UserDto?> GetUserProfileByNameAsync(string name);
 
     // Retrieves all users in database
     Task<List<UserDto>> GetAllUsersAsync();

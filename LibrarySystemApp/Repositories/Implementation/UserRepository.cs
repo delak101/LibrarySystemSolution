@@ -21,7 +21,7 @@ namespace LibrarySystemApp.Repositories.Implementation
             await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == (string?)email.ToLower());
     
-        public async Task<List<User?>> GetUsersByNameAsync(string name) =>
+        public async Task<List<User?>> GetUserByNameAsync(string name) =>
             await _context.Users
                 .Where(u => u.Name.Contains(name))
                 .ToListAsync();

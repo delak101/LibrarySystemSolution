@@ -18,18 +18,23 @@ Authorization: Bearer <your_token>
 #### Payload:
 ```json
 {
-    "name": "string",
-    "email": "string",  
-    "password": "string",
-    "department": "string",  
-    "phone": "string",
-    "year": 1-4
+    "pfp": "base64-profile-image",
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "studentEmail": "johndoe@fci.zu.edu",
+    "password": "strongpassword",
+    "nationalId": "12345678912345",
+    "department": "IT",
+    "phone": "0123456789",
+    "year": 2,
+    "termsAccepted": true
 }
 ```
 #### Response:
-- **200 OK**: User Registered Successfully
-- **400 Bad Request**: Email or phone number taken / User exists
-- **404 Not Found**: Server down
+- **200 OK**: ``{ "message": "User registered successfully." }``
+- **400 Bad Request**: ``{ "message": "User already exists." }``
+- **404 Not Found**: you're using wrong endpoint.
+- **500 Internal Server Error**: server down.
 
 ---
 
@@ -38,24 +43,72 @@ Authorization: Bearer <your_token>
 #### Payload:
 ```json
 {
-    "email": "string",
-    "password": "string"
+    "email": "johndoe@example.com",
+    "password": "strongpassword"
 }
 ```
 #### Response:
 - **200 OK**: Login Successful (Returns user data With **TOKEN**) use token for authorized access
-- **400 Bad Request**: Doesn't Exist / Wrong Password
+- **400 Bad Request**:
+  -``{ "message": "User does not exist." }``
+  -``{ "message": "Invalid password." }``
 
 ---
 
+### Forgot Password
+**Post `/api/user/forgot-password
+#### Payload:
+```json
+ {
+    "email": "johndoe@example.com"
+  }
+```
+#### Response:
+- **200 OK**: ``{ "message": "Password reset initiated. Please check your email." }``
+-  **400 BadRequest**; ``{ "message": "Email not found." }``
+
+---
+
+### Reset Password
+**Post `/api/user/reset-password
+#### Payload:
+```json
+ {
+    "token": "token-received-in-email", // sent automatically when user presses link in email
+    "newPassword": "newstrongpassword"
+  }
+```
+#### Response:
+- **200 OK**: ``{ "message": "Password reset successful." }``
+-  **400 BadRequest**; ``{ "message": "Invalid or expired token." }``
+
+---
 ### Get User Profile by ID
 **GET** `/api/user/profile/searchid/{userid}`
 #### Response:
-- **200 OK**: Returns user data
-- **400 Bad Request**: User doesn't exist
+- **200 OK**:
+```json
+    {
+      "id": 1,
+      "pfp": "base64-profile-image",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "studentEmail": "johndoe@college.edu",
+      "nationalId": "12345678912345",
+      "department": "IT",
+      "phone": "0123456789",
+      "year": 2
+    }
+```
+
+- **404 NotFound**: `{ "message": "User not found." }`
 
 ### Get User Profile by Email
 **GET** `/api/user/profile/search/{email}`
+(Same response as search by ID)
+
+### Get User Profile by Name
+**GET** `/api/user/profile/search/{name}`
 (Same response as search by ID)
 
 ### Get All Users
@@ -69,16 +122,19 @@ Returns all users in JSON format.
 #### Payload:
 ```json
 {
-  "name": "string",
-  "email": "string",
-  "department": "string",
-  "phone": "string",
-  "year": 1-4
+    "pfp": "base64-profile-image"
+    "name": "John Doe",
+    "email": "john.doe@gmail.com",
+    "studentEmail": "john.doe@fci.zu.edu.eg",
+    "nationalId": "1234568912345",
+    "department": "CS",
+    "phone": "0987654321",
+    "year": 3
 }
 ```
 #### Response:
-- **200 OK**: User updated
-- **400 Bad Request**: User doesn't exist
+- **200 OK**: `{ "message": "User updated successfully." }`
+- **404 NotFound**: `{ "message": "User not found or update failed." }`
 
 ### Update User Profile by Email
 **PUT** `/api/User/profile/update/{email}`
@@ -104,7 +160,7 @@ Returns all users in JSON format.
 - **200 OK**: Users deleted successfully 
 - **400 Bad Request**: Some or all users not found
 
----
+----
 
 ## Books
 

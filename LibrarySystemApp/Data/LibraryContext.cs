@@ -28,6 +28,10 @@ namespace LibrarySystemApp.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+            
+            // modelBuilder.Entity<User>()
+            //     .HasIndex(u => u.NationalId)
+            //     .IsUnique();
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Name);

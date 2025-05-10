@@ -19,11 +19,11 @@ namespace LibrarySystemApp.Repositories.Implementation
         // Retrieve user by email
         public async Task<User?> GetUserByEmailAsync(string email) =>
             await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == (string?)email.ToLower());
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     
         public async Task<List<User?>> GetUserByNameAsync(string name) =>
             await _context.Users
-                .Where(u => u.Name.Contains(name))
+                .Where(u => u.Name.ToLower().Contains(name.ToLower()))
                 .ToListAsync();
 
         // Add new user

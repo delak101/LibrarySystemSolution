@@ -85,7 +85,7 @@ public class UserController(IUserService _userService)
         return Ok(user);
     }
 
-    [HttpGet("profile/search/{name}")] // GET: findUser api/user/profile/search/name/{name}
+    [HttpGet("profile/search/name/{name}")] // GET: findUser api/user/profile/search/name/{name}
     public async Task<ActionResult<UserDto?>> GetUserByName(string name)
     {
         var user = await _userService.GetUserProfileByNameAsync(name);

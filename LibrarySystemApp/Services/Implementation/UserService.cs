@@ -159,11 +159,15 @@ public class UserService(
         var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return false;
 
+        // Update only the fields provided in the DTO; leave others unchanged
+        user.ProfilePicture = updateUserDto.ProfilePicture ?? user.ProfilePicture;
         user.Name = updateUserDto.Name ?? user.Name;
-        user.Email = updateUserDto.Email ?? user.Email;
+        user.Email = updateUserDto.Email?.ToLower() ?? user.Email; // Ensure email consistency
+        user.StudentEmail = updateUserDto.studentEmail ?? user.StudentEmail;
         user.Department = updateUserDto.Department ?? user.Department;
-        user.Phone = updateUserDto.Phone ?? user.Phone;
+        user.NationalId = updateUserDto.NationalId ?? user.NationalId;
         user.Year = updateUserDto.Year ?? user.Year;
+        user.Phone = updateUserDto.Phone ?? user.Phone;
         await _userRepository.UpdateUserByEmailAsync(email, user);
         return true;
     }
@@ -186,7 +190,7 @@ public class UserService(
 
     public async Task<bool> InitiatePasswordReset(string email)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return false;
 
         user.PasswordResetToken = Guid.NewGuid().ToString();

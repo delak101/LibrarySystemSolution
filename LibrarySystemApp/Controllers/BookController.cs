@@ -1,4 +1,5 @@
 ﻿using LibrarySystemApp.DTOs;
+using LibrarySystemApp.Models;
 using LibrarySystemApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -93,6 +94,13 @@ public class BookController(IBookService _bookService) : ControllerBase
             return NotFound("No books found for this department.");
 
         return Ok(books);
+    }
+
+    [HttpGet("authors")] // GET: api/book/authors get all authors
+    public async Task<ActionResult<List<Author>>> GetAllAuthors()
+    {
+        var authors = await _bookService.GetAuthorsAsync();
+        return Ok(authors);
     }
 
     [HttpPut("update/{bookId}")] // PUT: api/book/update/{bookId}

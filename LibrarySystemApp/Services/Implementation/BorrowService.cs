@@ -11,25 +11,25 @@ namespace LibrarySystemApp.Services
     {
         public async Task<Borrow> RequestBorrowAsync(int userId, int bookId, DateTime borrowDate, DateTime dueDate)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-                throw new InvalidOperationException($"User with ID {userId} does not exist.");
-            
-            var book = await _context.Books.FindAsync(bookId);
-            if (book == null)
-                throw new InvalidOperationException($"Book with ID {bookId} does not exist.");
-            
-            var isBookAlreadyBorrowed = await _context.Borrows
-            .AnyAsync(b => b.BookId == bookId && b.Status == BorrowStatus.Approved);
-            if (isBookAlreadyBorrowed)
-                throw new InvalidOperationException($"Book with ID {bookId} is currently borrowed and not available.");
+            // var user = await _context.Users.FindAsync(userId);
+            // if (user == null)
+            //     throw new InvalidOperationException($"User with ID {userId} does not exist.");
+            //
+            // var book = await _context.Books.FindAsync(bookId);
+            // if (book == null)
+            //     throw new InvalidOperationException($"Book with ID {bookId} does not exist.");
+            //
+            // var isBookAlreadyBorrowed = await _context.Borrows
+            // .AnyAsync(b => b.BookId == bookId && b.Status == BorrowStatus.Approved);
+            // if (isBookAlreadyBorrowed)
+            //     throw new InvalidOperationException($"Book with ID {bookId} is currently borrowed and not available.");
 
             var borrow = new Borrow
             {
                 UserId = userId,
                 BookId = bookId,
                 BorrowDate = borrowDate,
-                DueDate = dueDate,
+                DueDate = borrowDate + TimeSpan.FromDays(7),
                 Status = BorrowStatus.Pending,
             };
 

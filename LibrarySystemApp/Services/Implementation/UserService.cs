@@ -202,7 +202,7 @@ public class UserService(
         var baseUrl = _configuration["appsettings:BaseUrl"] ?? "http://localhost:5238/swagger/index.html";
 
         // Create the reset link
-        var resetLink = $"{baseUrl}/reset-password?token={user.PasswordResetToken}";
+        var resetLink = $"{baseUrl}/api/user/reset-password?token={user.PasswordResetToken}";
 
         // Create email content
         var subject = "Password Reset Request";

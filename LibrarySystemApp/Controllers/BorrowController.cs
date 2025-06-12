@@ -14,8 +14,20 @@ namespace LibrarySystemApp.Controllers
         [HttpPost("request")]
         public async Task<IActionResult> RequestBorrow(int userId, int bookId, DateTime borrowDate, DateTime dueDate)
         {
-            var borrow = await _borrowService.RequestBorrowAsync(userId, bookId, borrowDate, dueDate);
-            return Ok(new { message = "Borrow request submitted successfully", borrow });
+            try
+            {
+                var borrow = await _borrowService.RequestBorrowAsync(userId, bookId, borrowDate, dueDate);
+                return Ok(new { message = "Borrow request submitted successfully", borrow });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest((new { error = ex.Message }));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred while processing your request" });
+            }
+            
         }
 
         // Get all pending borrow requests (Admin)

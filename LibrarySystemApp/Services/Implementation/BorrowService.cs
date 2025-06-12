@@ -7,23 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Services
 {
-    public class BorrowService(IBorrowRepository _borrowRepository, LibraryContext _context) : IBorrowService
+    public class BorrowService(IBorrowRepository _borrowRepository, IUserRepository _userRepository, IBookRepository _bookRepository, LibraryContext _context) : IBorrowService
     {
         public async Task<Borrow> RequestBorrowAsync(int userId, int bookId, DateTime borrowDate, DateTime dueDate)
         {
-            // var user = await _context.Users.FindAsync(userId);
-            // if (user == null)
-            //     throw new InvalidOperationException($"User with ID {userId} does not exist.");
-            //
-            // var book = await _context.Books.FindAsync(bookId);
-            // if (book == null)
-            //     throw new InvalidOperationException($"Book with ID {bookId} does not exist.");
-            //
-            // var isBookAlreadyBorrowed = await _context.Borrows
-            // .AnyAsync(b => b.BookId == bookId && b.Status == BorrowStatus.Approved);
-            // if (isBookAlreadyBorrowed)
-            //     throw new InvalidOperationException($"Book with ID {bookId} is currently borrowed and not available.");
-
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException($"User with ID {userId} does not exist.");
+            
+            var book = await _bookRepository.GetBookByIdAsync(bookId);
+            if (book == null)
+                throw new InvalidOperationException($"Book with ID {bookId} does not exist.");
+            if (!book.IsAvailable)
+                throw new InvalidOperationException($"Book with ID {bookId} is not available. already borrowed");
+            
             var borrow = new Borrow
             {
                 UserId = userId,

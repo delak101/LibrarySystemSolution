@@ -22,7 +22,7 @@ namespace LibrarySystemApp.Models
         [MinLength(8)] // Ensure password security
         public required string PasswordHash { get; set; }
 
-        public string Role { get; set; } = "Admin";
+        public string Role { get; set; } = "User"; // Default role is User, can be Admin
 
         [MaxLength(100)] // Limit department name length
         public required string Department { get; set; } // GENERAL, IT, CS, IS, DS, AI, GIS, BIO

@@ -31,7 +31,7 @@ namespace LibrarySystemApp.Repositories
             return await _context.Borrows
                 .Where(b => b.Status == BorrowStatus.Pending)
                 .Include(b => b.User)  // Include User to get name
-                .Include(b => b.Book)  // Include Book to get title
+                .Include(b => b.Book)  // Include Book to get title and shelf
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
@@ -39,6 +39,7 @@ namespace LibrarySystemApp.Repositories
                     StudentName = b.User.Name,
                     BookId = b.Book.Id,
                     BookTitle = b.Book.Name,
+                    BookShelf = b.Book.Shelf, // <-- Add this line
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()
@@ -96,9 +97,13 @@ namespace LibrarySystemApp.Repositories
                 {
                     Id = b.Id,
                     StudentId = b.User.Id,
+                    StudentPfp = b.User.ProfilePicture,
                     StudentName = b.User.Name,
                     BookId = b.Book.Id,
+                    BookImg = b.Book.Image,
                     BookTitle = b.Book.Name,
+                    BookAuthor = b.Book.Authors,
+                    BookShelf = b.Book.Shelf,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()

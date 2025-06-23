@@ -6,6 +6,8 @@ namespace LibrarySystemApp.Models
     {
         public int Id { get; set; }
 
+        public string? pic { get; set; }
+
         [Required]
         [MaxLength(100)] // Limit author name length
         public string Name { get; set; }

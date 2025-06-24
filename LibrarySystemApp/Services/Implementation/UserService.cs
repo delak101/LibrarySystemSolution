@@ -189,38 +189,40 @@ public class UserService(
 
 
     public async Task<bool> InitiatePasswordReset(string email)
-    {
-        var user = await _userRepository.GetUserByEmailAsync(email);
+    {        var user = await _userRepository.GetUserByEmailAsync(email);
         if (user == null) return false;
 
-        user.PasswordResetToken = Guid.NewGuid().ToString();
-        user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(24);
+        // Generate a 6-digit numeric token
+        var random = new Random();
+        var token = random.Next(100000, 999999).ToString();
+        user.PasswordResetToken = token;
+        user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1); // Reduced to 1 hour for security
 
         await _context.SaveChangesAsync();
 
         // Get the base URL from configuration
-        var baseUrl = _configuration["appsettings:BaseUrl"] ?? "http://localhost:5238/swagger/index.html";
-
-        // Create the reset link
+        var baseUrl = _configuration["appsettings:BaseUrl"] ?? "https://fci-library.live";        // Create the reset link
         var resetLink = $"{baseUrl}/api/user/reset-password?token={user.PasswordResetToken}";
 
         // Create email content
-        var subject = "Password Reset Request";
+        var subject = "Your Password Reset Code - FCI Library System";
         var content = $@"
             Hello,
 
-            You have requested to reset your password. Please click the link below to reset your password:
+            You have requested to reset your password for your FCI Library System account.
 
-            {resetLink}
+            Your password reset code is:
 
-            or copy your token {user.PasswordResetToken} and paste it in the reset password page {baseUrl}/reset-password .
+            {user.PasswordResetToken}
 
-            This link will expire in 24 hours.
+            Please enter this code on the password reset page: {baseUrl}/reset-password
 
-            If you didn't request this password reset, please ignore this email.
+            This code will expire in 1 hour for security purposes.
+
+            If you didn't request this password reset, please ignore this email and ensure your account is secure.
 
             Best regards,
-            Library System Team
+            FCI Library System Team
         ";
 
         // Send the email
@@ -243,19 +245,22 @@ public class UserService(
         await _context.SaveChangesAsync();
         return true;
     }
-
-    private static UserDto MapToResponseDto(User user) => new()
+    private static UserDto MapToResponseDto(User? user)
     {
-        Id = user.Id,
-        ProfilePicture = user.ProfilePicture,
-        Name = user.Name,
-        Email = user.Email,
-        StudentEmail = user.StudentEmail,
-        NationalId = user.NationalId,
-        Role = user.Role,
-        Phone = user.Phone,
-        Department = user.Department,
-        Year = user.Year,
-        TermsAccepted = user.TermsAccepted
-    };
+        if (user == null) return null!;
+        return new UserDto
+        {
+            Id = user.Id,
+            ProfilePicture = user.ProfilePicture,
+            Name = user.Name,
+            Email = user.Email,
+            StudentEmail = user.StudentEmail,
+            NationalId = user.NationalId,
+            Role = user.Role,
+            Phone = user.Phone,
+            Department = user.Department,
+            Year = user.Year,
+            TermsAccepted = user.TermsAccepted
+        };
+    }
 }

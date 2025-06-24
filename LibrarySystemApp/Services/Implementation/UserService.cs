@@ -215,7 +215,7 @@ public class UserService(
 
             {user.PasswordResetToken}
 
-            Please enter this code on the password reset page: {baseUrl}/reset-password
+            Please enter this code on the password reset page: {baseUrl}/api/user/reset-password
 
             This code will expire in 1 hour for security purposes.
 

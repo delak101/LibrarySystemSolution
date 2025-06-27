@@ -12,11 +12,11 @@ namespace LibrarySystemApp.Controllers
     {
         // Request to borrow a book
         [HttpPost("request")]
-        public async Task<IActionResult> RequestBorrow(int userId, int bookId, DateTime borrowDate, DateTime dueDate)
+        public async Task<IActionResult> RequestBorrow(int userId, int bookId)
         {
             try
             {
-                var borrow = await _borrowService.RequestBorrowAsync(userId, bookId, borrowDate, dueDate);
+                var borrow = await _borrowService.RequestBorrowAsync(userId, bookId);
                 return Ok(new { message = "Borrow request submitted successfully", borrow });
             }
             catch (InvalidOperationException ex)

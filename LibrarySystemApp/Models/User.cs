@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace LibrarySystemApp.Models
 {
     public class User
     {
         public int Id { get; set; }
-        public string ProfilePicture { get; set; }
+        public string? ProfilePicture { get; set; }
         [MaxLength(100)] // Ensure name length is reasonable
         public required string Name { get; set; }
 
@@ -38,8 +39,11 @@ namespace LibrarySystemApp.Models
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetTokenExpiry { get; set; }
 
-        public ICollection<Favorite> Favorites { get; set; }
-        public ICollection<Borrow> Borrows { get; set; }
-        public ICollection<Review> Reviews { get; set; }
+        [JsonIgnore]
+        public ICollection<Favorite>? Favorites { get; set; }
+        [JsonIgnore]
+        public ICollection<Borrow>? Borrows { get; set; }
+        [JsonIgnore]
+        public ICollection<Review>? Reviews { get; set; }
     }
 }

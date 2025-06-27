@@ -9,7 +9,7 @@ namespace LibrarySystemApp.Services
 {
     public class BorrowService(IBorrowRepository _borrowRepository, IUserRepository _userRepository, IBookRepository _bookRepository, LibraryContext _context) : IBorrowService
     {
-        public async Task<Borrow> RequestBorrowAsync(int userId, int bookId, DateTime borrowDate, DateTime dueDate)
+        public async Task<BorrowDto> RequestBorrowAsync(int userId, int bookId)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
@@ -21,16 +21,32 @@ namespace LibrarySystemApp.Services
             if (!book.IsAvailable)
                 throw new InvalidOperationException($"Book with ID {bookId} is not available. already borrowed");
             
+            var currentDate = DateTime.Today; // Use today's date
+            
             var borrow = new Borrow
             {
                 UserId = userId,
                 BookId = bookId,
-                BorrowDate = borrowDate,
-                DueDate = borrowDate + TimeSpan.FromDays(7),
+                BorrowDate = currentDate,
+                DueDate = currentDate.AddDays(7), // 7 days from today
                 Status = BorrowStatus.Pending,
             };
 
-            return await _borrowRepository.AddBorrowAsync(borrow);
+            var savedBorrow = await _borrowRepository.AddBorrowAsync(borrow);
+            
+            // Return a DTO to avoid circular references
+            return new BorrowDto
+            {
+                Id = savedBorrow.Id,
+                StudentId = savedBorrow.UserId,
+                StudentName = user.Name,
+                BookId = savedBorrow.BookId,
+                BookTitle = book.Name,
+                BookShelf = book.Shelf,
+                BorrowDate = savedBorrow.BorrowDate,
+                DueDate = savedBorrow.DueDate,
+                Status = savedBorrow.Status.ToString()
+            };
         }
 
         public async Task<bool> ApproveBorrowAsync(int borrowId)

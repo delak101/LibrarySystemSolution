@@ -24,7 +24,6 @@ public class BookRepository(LibraryContext _context) : IBookRepository
         await _context.Books
             .Include(b => b.Categories)
             .Include(b => b.Authors)
-            .Include(b => b.Publisher)
             .ToListAsync();
     
 
@@ -65,7 +64,6 @@ public class BookRepository(LibraryContext _context) : IBookRepository
 
     public async Task<List<Author>> GetAuthorsAsync() =>
         await _context.Authors
-            .Include(a => a.Books)
             .ToListAsync();
     
     public async Task<Book> AddBookAsync(Book book)

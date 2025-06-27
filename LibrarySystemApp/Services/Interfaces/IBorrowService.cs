@@ -5,7 +5,7 @@ namespace LibrarySystemApp.Services.Interfaces
 {
     public interface IBorrowService
     {
-        Task<Borrow> RequestBorrowAsync(int userId, int bookId, DateTime borrowDate, DateTime dueDate);
+        Task<BorrowDto> RequestBorrowAsync(int userId, int bookId);
         Task<bool> ApproveBorrowAsync(int borrowId);
         Task<bool> DenyBorrowAsync(int borrowId);
         Task<bool> ReturnBookAsync(int borrowId);

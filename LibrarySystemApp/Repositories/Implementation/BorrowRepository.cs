@@ -35,11 +35,11 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
-                    StudentId = b.User.Id,
-                    StudentName = b.User.Name,
-                    BookId = b.Book.Id,
-                    BookTitle = b.Book.Name,
-                    BookShelf = b.Book.Shelf, // <-- Add this line
+                    StudentId = b.User!.Id,
+                    StudentName = b.User!.Name,
+                    BookId = b.Book!.Id,
+                    BookTitle = b.Book!.Name,
+                    BookShelf = b.Book!.Shelf, // <-- Add this line
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()
@@ -56,10 +56,10 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
-                    StudentId = b.User.Id,
-                    StudentName = b.User.Name,
-                    BookId = b.Book.Id,
-                    BookTitle = b.Book.Name,
+                    StudentId = b.User!.Id,
+                    StudentName = b.User!.Name,
+                    BookId = b.Book!.Id,
+                    BookTitle = b.Book!.Name,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()
@@ -76,10 +76,10 @@ namespace LibrarySystemApp.Repositories
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
-                    StudentId = b.User.Id,
-                    StudentName = b.User.Name,
-                    BookId = b.Book.Id,
-                    BookTitle = b.Book.Name,
+                    StudentId = b.User!.Id,
+                    StudentName = b.User!.Name,
+                    BookId = b.Book!.Id,
+                    BookTitle = b.Book!.Name,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()
@@ -92,18 +92,20 @@ namespace LibrarySystemApp.Repositories
             return await _context.Borrows
                 .Where(b => b.UserId == userId)
                 .OrderByDescending(b => b.BorrowDate)
+                .Include(b => b.User)
                 .Include(b => b.Book)
+                    .ThenInclude(book => book!.Authors)
                 .Select(b => new BorrowDto
                 {
                     Id = b.Id,
-                    StudentId = b.User.Id,
-                    StudentPfp = b.User.ProfilePicture,
-                    StudentName = b.User.Name,
-                    BookId = b.Book.Id,
-                    BookImg = b.Book.Image,
-                    BookTitle = b.Book.Name,
-                    BookAuthor = b.Book.Authors,
-                    BookShelf = b.Book.Shelf,
+                    StudentId = b.User!.Id,
+                    StudentPfp = b.User!.ProfilePicture,
+                    StudentName = b.User!.Name,
+                    BookId = b.Book!.Id,
+                    BookImg = b.Book!.Image,
+                    BookTitle = b.Book!.Name,
+                    BookAuthor = b.Book!.Authors != null ? string.Join(", ", b.Book.Authors.Select(a => a.Name)) : "",
+                    BookShelf = b.Book!.Shelf,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()

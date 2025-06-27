@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace LibrarySystemApp.Models
 {
@@ -14,7 +15,7 @@ namespace LibrarySystemApp.Models
         public int BookId { get; set; } // Book being borrowed
 
         [Required]
-        public DateTime BorrowDate { get; set; } = DateTime.UtcNow; // Default to now
+        public DateTime BorrowDate { get; set; } = DateTime.Today; // Default to now
 
         [Required]
         public DateTime DueDate { get; set; } // Admin sets due date
@@ -25,8 +26,10 @@ namespace LibrarySystemApp.Models
         public BorrowStatus Status { get; set; } = BorrowStatus.Pending; // Default: Pending
 
         // Navigation properties
-        public User User { get; set; }
-        public Book Book { get; set; }
+        [JsonIgnore]
+        public User? User { get; set; }
+        [JsonIgnore]
+        public Book? Book { get; set; }
     }
 
     public enum BorrowStatus

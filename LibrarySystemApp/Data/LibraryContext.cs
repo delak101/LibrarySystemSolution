@@ -15,6 +15,7 @@ namespace LibrarySystemApp.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Borrow> Borrows { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,7 +32,7 @@ namespace LibrarySystemApp.Data
             
             // modelBuilder.Entity<User>()
             //     .HasIndex(u => u.NationalId)
-            //     .IsUnique();
+            //     .IsUnique();[]
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Name);
@@ -124,6 +125,18 @@ namespace LibrarySystemApp.Data
 
             modelBuilder.Entity<Review>()
                 .HasIndex(r => new { r.UserId, r.BookId });
+
+            // UserDeviceToken entity configuration
+            modelBuilder.Entity<UserDeviceToken>(entity =>
+            {
+                entity.HasIndex(e => e.DeviceToken).IsUnique();
+                entity.HasIndex(e => new { e.UserId, e.DeviceToken }).IsUnique();
+                
+                entity.HasOne(d => d.User)
+                      .WithMany()
+                      .HasForeignKey(d => d.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

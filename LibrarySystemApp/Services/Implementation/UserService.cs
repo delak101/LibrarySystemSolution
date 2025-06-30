@@ -37,7 +37,7 @@ public class UserService(
             Email = email,
             StudentEmail = registerDto.studentEmail,
             PasswordHash = hashPassword,
-            Role = "Admin",
+            // Role = "Admin",
             NationalId = registerDto.nationalId,
             Department = registerDto.department,
             Phone = registerDto.phone,

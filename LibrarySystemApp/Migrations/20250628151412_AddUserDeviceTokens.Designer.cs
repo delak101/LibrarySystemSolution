@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LibrarySystemApp.Data.Migrations
+namespace LibrarySystemApp.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250510183049_latestFix")]
-    partial class latestFix
+    [Migration("20250628151412_AddUserDeviceTokens")]
+    partial class AddUserDeviceTokens
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,9 @@ namespace LibrarySystemApp.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("pic")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -269,7 +272,6 @@ namespace LibrarySystemApp.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProfilePicture")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Role")
@@ -298,6 +300,44 @@ namespace LibrarySystemApp.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LibrarySystemApp.Models.UserDeviceToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeviceToken")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeviceType")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceToken")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "DeviceToken")
+                        .IsUnique();
+
+                    b.ToTable("UserDeviceTokens");
                 });
 
             modelBuilder.Entity("AuthorBook", b =>
@@ -393,6 +433,17 @@ namespace LibrarySystemApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LibrarySystemApp.Models.UserDeviceToken", b =>
+                {
+                    b.HasOne("LibrarySystemApp.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

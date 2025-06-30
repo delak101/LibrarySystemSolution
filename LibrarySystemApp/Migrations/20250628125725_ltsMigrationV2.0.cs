@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace LibrarySystemApp.Data.Migrations
+namespace LibrarySystemApp.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class ltsMigrationV20 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,6 +17,7 @@ namespace LibrarySystemApp.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    pic = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -57,13 +58,19 @@ namespace LibrarySystemApp.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    ProfilePicture = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    StudentEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    Role = table.Column<int>(type: "INTEGER", maxLength: 50, nullable: false),
-                    Department = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Role = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Department = table.Column<string>(type: "TEXT", maxLength: 25, nullable: false),
                     Phone = table.Column<string>(type: "TEXT", nullable: false),
-                    Year = table.Column<int>(type: "INTEGER", nullable: true)
+                    NationalId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Year = table.Column<int>(type: "INTEGER", nullable: false),
+                    TermsAccepted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PasswordResetToken = table.Column<string>(type: "TEXT", nullable: true),
+                    PasswordResetTokenExpiry = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,11 +84,10 @@ namespace LibrarySystemApp.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
-                    Author = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
                     Shelf = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     IsAvailable = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Department = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Department = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
                     AssignedYear = table.Column<int>(type: "INTEGER", nullable: true),
                     Image = table.Column<string>(type: "TEXT", nullable: true),
                     PublisherId = table.Column<int>(type: "INTEGER", nullable: true)
@@ -155,7 +161,8 @@ namespace LibrarySystemApp.Data.Migrations
                     BookId = table.Column<int>(type: "INTEGER", nullable: false),
                     BorrowDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     DueDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ReturnDate = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    ReturnDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,13 +172,13 @@ namespace LibrarySystemApp.Data.Migrations
                         column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Borrows_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -258,9 +265,9 @@ namespace LibrarySystemApp.Data.Migrations
                 column: "BookId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Borrows_UserId_BookId_BorrowDate",
+                name: "IX_Borrows_UserId_BookId",
                 table: "Borrows",
-                columns: new[] { "UserId", "BookId", "BorrowDate" });
+                columns: new[] { "UserId", "BookId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_BookId",

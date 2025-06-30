@@ -3,19 +3,16 @@ using System;
 using LibrarySystemApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LibrarySystemApp.Data.Migrations
+namespace LibrarySystemApp.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250322211449_AuthorizationRole")]
-    partial class AuthorizationRole
+    partial class LibraryContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -61,6 +58,9 @@ namespace LibrarySystemApp.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("pic")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
@@ -76,12 +76,10 @@ namespace LibrarySystemApp.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Department")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
@@ -133,6 +131,9 @@ namespace LibrarySystemApp.Data.Migrations
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
@@ -140,7 +141,7 @@ namespace LibrarySystemApp.Data.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("UserId", "BookId", "BorrowDate");
+                    b.HasIndex("UserId", "BookId");
 
                     b.ToTable("Borrows");
                 });
@@ -237,7 +238,7 @@ namespace LibrarySystemApp.Data.Migrations
 
                     b.Property<string>("Department")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(25)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -250,17 +251,37 @@ namespace LibrarySystemApp.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("NationalId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiry")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Role")
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StudentEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TermsAccepted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Year")
                         .HasColumnType("INTEGER");
@@ -276,6 +297,44 @@ namespace LibrarySystemApp.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LibrarySystemApp.Models.UserDeviceToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeviceToken")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeviceType")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceToken")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "DeviceToken")
+                        .IsUnique();
+
+                    b.ToTable("UserDeviceTokens");
                 });
 
             modelBuilder.Entity("AuthorBook", b =>
@@ -323,13 +382,13 @@ namespace LibrarySystemApp.Data.Migrations
                     b.HasOne("LibrarySystemApp.Models.Book", "Book")
                         .WithMany("Borrows")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LibrarySystemApp.Models.User", "User")
                         .WithMany("Borrows")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Book");
@@ -371,6 +430,17 @@ namespace LibrarySystemApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LibrarySystemApp.Models.UserDeviceToken", b =>
+                {
+                    b.HasOne("LibrarySystemApp.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

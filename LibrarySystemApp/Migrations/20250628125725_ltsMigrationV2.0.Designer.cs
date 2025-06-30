@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LibrarySystemApp.Data.Migrations
+namespace LibrarySystemApp.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250506230505_passwordReset")]
-    partial class passwordReset
+    [Migration("20250628125725_ltsMigrationV2.0")]
+    partial class ltsMigrationV20
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,9 @@ namespace LibrarySystemApp.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("pic")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -251,12 +254,14 @@ namespace LibrarySystemApp.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("NationalId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordResetToken")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("PasswordResetTokenExpiry")
@@ -266,10 +271,20 @@ namespace LibrarySystemApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("StudentEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TermsAccepted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Year")
                         .HasColumnType("INTEGER");

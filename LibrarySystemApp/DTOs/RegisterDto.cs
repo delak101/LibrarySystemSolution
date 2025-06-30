@@ -7,7 +7,7 @@ public class RegisterDto
     public required string email { get; set; }
     public string? studentEmail { get; set; }
     public required string password { get; set; }
-    public int nationalId { get; set; }
+    public long nationalId { get; set; }
     // public required UserRole Role { get; set; }  // Admin, Student
     public required string department { get; set; }  // IT, CS, IS
     public required string phone { get; set; }

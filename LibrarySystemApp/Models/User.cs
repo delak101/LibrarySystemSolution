@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.Numerics;
 
 namespace LibrarySystemApp.Models
 {
@@ -31,7 +32,7 @@ namespace LibrarySystemApp.Models
         [Phone] 
         public required string Phone { get; set; } // Changed to string to support formatting
 
-        public required int NationalId { get; set; }
+        public required long NationalId { get; set; }
         public required int Year { get; set; }
         
         public required bool TermsAccepted { get; set; }

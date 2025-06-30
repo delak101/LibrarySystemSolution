@@ -7,7 +7,7 @@ public class UserDto
     public required string Name { get; set; }
     public required string Email { get; set; }
     public string? StudentEmail { get; set; }
-    public required int NationalId { get; set; }
+    public required long NationalId { get; set; }
     public required string Role { get; set; }
     public required string Phone { get; set; } // Ensure Phone is included
     public required string Department { get; set; }   // e.g., "IT", "CS", "IS"

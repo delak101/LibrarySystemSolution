@@ -16,8 +16,11 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Allow App to be externally accessible on port 5000
+// Production: Allow App to be externally accessible on port 5000
 builder.WebHost.UseUrls("http://0.0.0.0:5000");
+
+// Development: Allow App to be externally accessible on port 5001
+builder.WebHost.UseUrls("http://0.0.0.0:5001");
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
@@ -84,6 +87,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IEmailService, SendGridEmailService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddHttpClient(); // For Firebase HTTP requests

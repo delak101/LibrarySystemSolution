@@ -27,6 +27,19 @@ public class BookService(IBookRepository _bookRepository, LibraryContext _contex
             return books.Select(MapToResponseDto).ToList();
         }
 
+        public async Task<PagedResult<BookResponseDto>> GetBooksPagedAsync(int page, int pageSize)
+        {
+            var pagedBooks = await _bookRepository.GetBooksPagedAsync(page, pageSize);
+            
+            return new PagedResult<BookResponseDto>
+            {
+                Items = pagedBooks.Items.Select(MapToResponseDto).ToList(),
+                TotalCount = pagedBooks.TotalCount,
+                Page = pagedBooks.Page,
+                PageSize = pagedBooks.PageSize
+            };
+        }
+
         public async Task<List<BookResponseDto>> GetBooksByGenreAsync(string genre)
         {
             var books = await _bookRepository.GetBooksByGenreAsync(genre);

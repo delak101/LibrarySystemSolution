@@ -46,6 +46,17 @@ public class BookController(IBookService _bookService) : ControllerBase
         return Ok(books);
     }
 
+    [HttpGet("paged")] // GET: api/book/paged?page=1&pageSize=10
+    public async Task<ActionResult<PagedResult<BookResponseDto>>> GetBooksPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 50) pageSize = 50; // Limit maximum page size
+        
+        var pagedBooks = await _bookService.GetBooksPagedAsync(page, pageSize);
+        return Ok(pagedBooks);
+    }
+
     [HttpGet("genre")] // GET: api/book/genre?genre=xyz
     public async Task<ActionResult<List<BookResponseDto>>> GetBooksByGenre([FromQuery] string genre)
     {

@@ -1,5 +1,6 @@
 ﻿using LibrarySystemApp.Data;
 using LibrarySystemApp.Models;
+using LibrarySystemApp.DTOs;
 using LibrarySystemApp.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,30 @@ public class BookRepository(LibraryContext _context) : IBookRepository
             .Include(b => b.Authors)
             .ToListAsync();
     
+    public async Task<PagedResult<Book>> GetBooksPagedAsync(int page, int pageSize)
+    {
+        var totalCount = await _context.Books.CountAsync();
+        
+        var books = await _context.Books
+            .Include(b => b.Categories)
+            .Include(b => b.Authors)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Book>
+        {
+            Items = books,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<int> GetBooksCountAsync()
+    {
+        return await _context.Books.CountAsync();
+    }
 
     public async Task<List<Book>> GetBooksByGenreAsync(string genre) =>
         await _context.Books

@@ -75,6 +75,12 @@ public class BookService(IBookRepository _bookRepository, LibraryContext _contex
             var authors = await _context.Authors.ToListAsync();
             return authors;
         }
+
+        public async Task<List<Category>> GetCategoriesAsync()
+        {
+            var categories = await _bookRepository.GetCategoriesAsync();
+            return categories;
+        }
         
         public async Task<BookResponseDto> AddBookAsync(BookDto bookDto)
         {

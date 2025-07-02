@@ -30,16 +30,22 @@ namespace LibrarySystemApp.Repositories
         {
             return await _context.Borrows
                 .Where(b => b.Status == BorrowStatus.Pending)
-                .Include(b => b.User)  // Include User to get name
-                .Include(b => b.Book)  // Include Book to get title and shelf
+                .Include(b => b.User)  // Include User to get name and profile picture
+                .Include(b => b.Book)  // Include Book to get title, shelf, and image
+                    .ThenInclude(b => b!.Authors)  // Include Authors to get author names
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
                     StudentId = b.User!.Id,
                     StudentName = b.User!.Name,
+                    StudentPfp = b.User!.ProfilePicture,
                     BookId = b.Book!.Id,
                     BookTitle = b.Book!.Name,
-                    BookShelf = b.Book!.Shelf, // <-- Add this line
+                    BookShelf = b.Book!.Shelf,
+                    BookImg = b.Book!.Image,
+                    BookAuthor = b.Book!.Authors != null && b.Book.Authors.Any() 
+                        ? string.Join(", ", b.Book.Authors.Select(a => a.Name))
+                        : null,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()
@@ -53,13 +59,20 @@ namespace LibrarySystemApp.Repositories
                 .Where(b => b.Status == BorrowStatus.Approved)
                 .Include(b => b.User)
                 .Include(b => b.Book)
+                    .ThenInclude(b => b!.Authors)
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
                     StudentId = b.User!.Id,
                     StudentName = b.User!.Name,
+                    StudentPfp = b.User!.ProfilePicture,
                     BookId = b.Book!.Id,
                     BookTitle = b.Book!.Name,
+                    BookShelf = b.Book!.Shelf,
+                    BookImg = b.Book!.Image,
+                    BookAuthor = b.Book!.Authors != null && b.Book.Authors.Any() 
+                        ? string.Join(", ", b.Book.Authors.Select(a => a.Name))
+                        : null,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()
@@ -73,13 +86,20 @@ namespace LibrarySystemApp.Repositories
                 .Where(b => b.DueDate < DateTime.UtcNow && b.Status == BorrowStatus.Approved)
                 .Include(b => b.User)
                 .Include(b => b.Book)
+                    .ThenInclude(b => b!.Authors)
                 .Select(b => new BorrowDto()
                 {
                     Id = b.Id,
                     StudentId = b.User!.Id,
                     StudentName = b.User!.Name,
+                    StudentPfp = b.User!.ProfilePicture,
                     BookId = b.Book!.Id,
                     BookTitle = b.Book!.Name,
+                    BookShelf = b.Book!.Shelf,
+                    BookImg = b.Book!.Image,
+                    BookAuthor = b.Book!.Authors != null && b.Book.Authors.Any() 
+                        ? string.Join(", ", b.Book.Authors.Select(a => a.Name))
+                        : null,
                     BorrowDate = b.BorrowDate,
                     DueDate = b.DueDate,
                     Status = b.Status.ToString()

@@ -90,6 +90,10 @@ public class BookRepository(LibraryContext _context) : IBookRepository
     public async Task<List<Author>> GetAuthorsAsync() =>
         await _context.Authors
             .ToListAsync();
+
+    public async Task<List<Category>> GetCategoriesAsync() =>
+        await _context.Categories
+            .ToListAsync();
     
     public async Task<Book> AddBookAsync(Book book)
     {

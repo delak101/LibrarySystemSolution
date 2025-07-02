@@ -242,7 +242,7 @@ Returns all users in JSON format.
 #### Response:
 - **200 OK**: Returns all books in JSON format
 
-### Get Books (Paginated) 🆕
+### Get Books (Paginated) 
 **GET** `/api/book/paged?page={page}&pageSize={pageSize}`
 #### Parameters:
 - `page` (optional): Page number, defaults to 1
@@ -266,6 +266,11 @@ Returns all users in JSON format.
 **GET** `/api/book/authors`
 #### Response:
 - **200 OK**: Returns all authors in JSON format
+
+### Get All Categories 
+**GET** `/api/book/categories`
+#### Response:
+- **200 OK**: Returns all categories in JSON format
 
 ---
 

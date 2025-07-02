@@ -114,6 +114,13 @@ public class BookController(IBookService _bookService) : ControllerBase
         return Ok(authors);
     }
 
+    [HttpGet("categories")] // GET: api/book/categories get all categories
+    public async Task<ActionResult<List<Category>>> GetAllCategories()
+    {
+        var categories = await _bookService.GetCategoriesAsync();
+        return Ok(categories);
+    }
+
     [HttpPut("update/{bookId}")] // PUT: api/book/update/{bookId}
     public async Task<IActionResult> UpdateBook(int bookId, [FromBody] BookDto bookDto)
     {

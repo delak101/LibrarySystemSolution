@@ -60,7 +60,7 @@ namespace LibrarySystemApp.Controllers
         {
             var result = await _borrowService.ApproveBorrowAsync(borrowId);
             if (result)
-                return Ok(new { message = "Borrow request approved" }); // ✅ Now correctly returns 200 OK
+                return Ok(new { message = "Borrow request approved" }); // Now correctly returns 200 OK
             return BadRequest(new { error = "Failed to approve request" });
         }
 
@@ -78,7 +78,7 @@ namespace LibrarySystemApp.Controllers
         {
             var result = await _borrowService.ReturnBookAsync(borrowId);
             if (result)
-                return Ok(new { message = "Book returned successfully" }); // ✅ Now correctly returns 200 OK
+                return Ok(new { message = "Book returned successfully" }); // Now correctly returns 200 OK
             return BadRequest(new { error = "Failed to return book" });
         }
 

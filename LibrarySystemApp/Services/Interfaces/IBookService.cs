@@ -16,6 +16,7 @@ public interface IBookService
     Task<List<BookResponseDto>> GetBooksByYearAsync(int year);
     Task<List<BookResponseDto>> GetBooksByDepartmentAsync(string department);
     Task<List<Author>> GetAuthorsAsync();
+    Task<List<Category>> GetCategoriesAsync();
     Task<BookResponseDto> AddBookAsync(BookDto bookDto);
     Task<BookResponseDto> UpdateBookAsync(int bookId, BookDto bookDto);
     Task<bool> DeleteBookAsync(int bookId);

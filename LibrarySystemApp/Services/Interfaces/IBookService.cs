@@ -10,6 +10,7 @@ public interface IBookService
     Task<List<BookResponseDto>> GetBooksByNameAsync(string name);
     Task<List<BookResponseDto>> GetBooksAsync();
     Task<PagedResult<BookResponseDto>> GetBooksPagedAsync(int page, int pageSize);
+    Task<PagedResult<BookResponseDto>> GetBooksByCategoryPagedAsync(string category, int page, int pageSize);
     Task<List<BookResponseDto>> GetBooksByGenreAsync(string genre);
     Task<List<BookResponseDto>> GetBooksByAuthorAsync(string author);
     Task<List<BookResponseDto>> GetBooksByAvailabilityAsync(bool isAvailable);

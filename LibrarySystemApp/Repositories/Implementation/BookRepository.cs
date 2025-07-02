@@ -47,6 +47,32 @@ public class BookRepository(LibraryContext _context) : IBookRepository
         };
     }
 
+    public async Task<PagedResult<Book>> GetBooksByCategoryPagedAsync(string category, int page, int pageSize)
+    {
+        var categoryLower = category.ToLower();
+        
+        var query = _context.Books
+            .Where(b => _context.Categories
+                .Any(c => c.Name.ToLower().Contains(categoryLower) && c.Books!.Contains(b)));
+
+        var totalCount = await query.CountAsync();
+        
+        var books = await query
+            .Include(b => b.Categories)
+            .Include(b => b.Authors)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Book>
+        {
+            Items = books,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
     public async Task<int> GetBooksCountAsync()
     {
         return await _context.Books.CountAsync();

@@ -11,6 +11,7 @@ public interface IBookRepository
     Task<PagedResult<Book>> GetBooksPagedAsync(int page, int pageSize);
     Task<int> GetBooksCountAsync();
     Task<List<Book>> GetBooksByGenreAsync(string genre);
+    Task<PagedResult<Book>> GetBooksByCategoryPagedAsync(string category, int page, int pageSize);
     Task<List<Book>> GetBooksByAuthorAsync(string author);
     Task<List<Book>> GetBooksByAvailabilityAsync(bool isAvailable);
     Task<List<Book>> GetBooksByYearAsync(int year);

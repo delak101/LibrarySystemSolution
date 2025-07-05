@@ -56,6 +56,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidIssuer = builder.Configuration["Jwt:Issuer"], // Match Issuer in TokenService
         ValidAudience = builder.Configuration["Jwt:Audience"], // Match Audience in TokenService
     };
+
+    // Allow JWT tokens from query string for SignalR WebSocket connections
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/notificationHub"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
@@ -69,7 +87,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 // Add SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+});
 
 // Configuring AllowAll Policy 
 builder.Services.AddCors(options =>

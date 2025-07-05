@@ -7,8 +7,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Services
 {
-    public class BorrowService(IBorrowRepository _borrowRepository, IUserRepository _userRepository, IBookRepository _bookRepository, LibraryContext _context) : IBorrowService
+    public class BorrowService : IBorrowService
     {
+        private readonly IBorrowRepository _borrowRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IBookRepository _bookRepository;
+        private readonly LibraryContext _context;
+        private readonly ICombinedNotificationService _notificationService;
+
+        public BorrowService(
+            IBorrowRepository borrowRepository,
+            IUserRepository userRepository,
+            IBookRepository bookRepository,
+            LibraryContext context,
+            ICombinedNotificationService notificationService)
+        {
+            _borrowRepository = borrowRepository;
+            _userRepository = userRepository;
+            _bookRepository = bookRepository;
+            _context = context;
+            _notificationService = notificationService;
+        }
         public async Task<BorrowDto> RequestBorrowAsync(int userId, int bookId)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
@@ -65,6 +84,18 @@ namespace LibrarySystemApp.Services
             // Ensure both are updated successfully
             await _borrowRepository.UpdateBorrowAsync(borrow);
             await _context.SaveChangesAsync();
+
+            // Send real-time notification to user
+            try
+            {
+                await _notificationService.SendBorrowConfirmationAsync(borrow.UserId, book.Name, borrow.DueDate);
+            }
+            catch (Exception ex)
+            {
+                // Log but don't fail the operation
+                Console.WriteLine($"Failed to send borrow confirmation notification: {ex.Message}");
+            }
+
             return true; // Always return true if successful
         }
 
@@ -95,6 +126,18 @@ namespace LibrarySystemApp.Services
             // Ensure both are updated successfully
             await _borrowRepository.UpdateBorrowAsync(borrow);
             await _context.SaveChangesAsync();
+
+            // Send real-time notification to user
+            try
+            {
+                await _notificationService.SendReturnConfirmationAsync(borrow.UserId, book.Name);
+            }
+            catch (Exception ex)
+            {
+                // Log but don't fail the operation
+                Console.WriteLine($"Failed to send return confirmation notification: {ex.Message}");
+            }
+
             return true; // Always return true if successful
         }
 

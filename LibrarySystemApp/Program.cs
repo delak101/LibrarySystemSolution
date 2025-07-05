@@ -12,6 +12,7 @@ using LibrarySystemApp.Services.Implementation;
 using LibrarySystemApp.Repositories.Interfaces;
 using LibrarySystemApp.Repositories.Implementation;
 using LibrarySystemApp.Services;
+using LibrarySystemApp.Hubs;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +68,9 @@ builder.Services.AddAuthorization();
 // Add the controllers service
 builder.Services.AddControllers();
 
+// Add SignalR
+builder.Services.AddSignalR();
+
 // Configuring AllowAll Policy 
 builder.Services.AddCors(options =>
 {
@@ -75,6 +79,14 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin() // Allow requests from any domain
             .AllowAnyMethod() // Allow all HTTP methods (GET, POST, etc.)
             .AllowAnyHeader(); // Allow all headers
+    });
+    
+    options.AddPolicy("SignalRPolicy", policy =>
+    {
+        policy.AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials() // Required for SignalR
+            .SetIsOriginAllowed(_ => true); // Allow any origin for SignalR
     });
 });
 
@@ -90,6 +102,8 @@ builder.Services.AddScoped<IBorrowService, BorrowService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IEmailService, SendGridEmailService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<ISignalRNotificationService, SignalRNotificationService>();
+builder.Services.AddScoped<ICombinedNotificationService, CombinedNotificationService>();
 builder.Services.AddHttpClient(); // For Firebase HTTP requests
 // Uncomment the line below to enable automatic notification reminders
 // builder.Services.AddHostedService<NotificationBackgroundService>();
@@ -106,7 +120,7 @@ var app = builder.Build();
 // }
 
 // Allowing Access
-app.UseCors("AllowAll");
+app.UseCors("SignalRPolicy");
 
 // app.UseHttpsRedirection();
 
@@ -114,5 +128,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map SignalR Hub
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

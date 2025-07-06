@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library System SignalR Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .notification {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .error {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            color: #a94442;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Library System SignalR Test Client</h1>
+    
+    <div class="container">
+        <h3>Connection Status</h3>
+        <div id="connectionStatus" class="status disconnected">Disconnected</div>
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+    </div>
+
+    <div class="container">
+        <h3>Authentication</h3>
+        <input type="text" id="token" placeholder="Enter JWT Token (from login)" />
+        <button onclick="setToken()">Set Token</button>
+        <div id="tokenStatus"></div>
+    </div>
+
+    <div class="container">
+        <h3>Send Test Notification</h3>
+        <input type="number" id="userId" placeholder="User ID" value="1" />
+        <input type="text" id="title" placeholder="Notification Title" value="Test Notification" />
+        <textarea id="body" placeholder="Notification Body">This is a test SignalR notification!</textarea>
+        <button onclick="sendTestNotification()">Send Notification</button>
+    </div>
+
+    <div class="container">
+        <h3>Received Notifications</h3>
+        <div id="notifications"></div>
+        <button onclick="clearNotifications()">Clear Notifications</button>
+    </div>
+
+    <div class="container">
+        <h3>Connection Log</h3>
+        <div id="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        let connection = null;
+        let authToken = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateConnectionStatus(status) {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.textContent = status;
+            statusDiv.className = status === 'Connected' ? 'status connected' : 'status disconnected';
+        }
+
+        function setToken() {
+            authToken = document.getElementById('token').value;
+            document.getElementById('tokenStatus').innerHTML = authToken ? 
+                '<div class="notification">Token set successfully</div>' : 
+                '<div class="error">No token provided</div>';
+        }
+
+        async function connect() {
+            try {
+                // Create connection with authentication if token is available
+                const options = {
+                    skipNegotiation: true,
+                    transport: signalR.HttpTransportType.WebSockets
+                };
+
+                if (authToken) {
+                    options.accessTokenFactory = () => authToken;
+                }
+
+                connection = new signalR.HubConnectionBuilder()
+                    .withUrl("http://localhost:5001/notificationHub", options)
+                    .withAutomaticReconnect()
+                    .build();
+
+                // Set up event handlers
+                connection.on("ReceiveNotification", function (notification) {
+                    log(`Received notification: ${notification.title}`);
+                    displayNotification(notification);
+                });
+
+                connection.on("JoinedGroup", function (groupName) {
+                    log(`Joined group: ${groupName}`);
+                });
+
+                connection.on("LeftGroup", function (groupName) {
+                    log(`Left group: ${groupName}`);
+                });
+
+                connection.on("NotificationMarkedAsRead", function (notificationId) {
+                    log(`Notification ${notificationId} marked as read`);
+                });
+
+                // Connection state change handlers
+                connection.onreconnecting(() => {
+                    log("Attempting to reconnect...");
+                    updateConnectionStatus("Reconnecting");
+                });
+
+                connection.onreconnected(() => {
+                    log("Reconnected successfully");
+                    updateConnectionStatus("Connected");
+                });
+
+                connection.onclose(() => {
+                    log("Connection closed");
+                    updateConnectionStatus("Disconnected");
+                });
+
+                // Start connection
+                await connection.start();
+                log("Connected to SignalR hub");
+                updateConnectionStatus("Connected");
+
+            } catch (err) {
+                log(`Connection failed: ${err}`);
+                updateConnectionStatus("Failed");
+            }
+        }
+
+        async function disconnect() {
+            if (connection) {
+                await connection.stop();
+                log("Disconnected from SignalR hub");
+                updateConnectionStatus("Disconnected");
+            }
+        }
+
+        function displayNotification(notification) {
+            const notificationsDiv = document.getElementById('notifications');
+            const notificationHtml = `
+                <div class="notification">
+                    <strong>${notification.title}</strong><br>
+                    ${notification.body}<br>
+                    <small>Type: ${notification.type} | Time: ${new Date(notification.createdAt).toLocaleString()}</small>
+                    ${notification.data ? `<br><small>Data: ${JSON.stringify(notification.data)}</small>` : ''}
+                </div>
+            `;
+            notificationsDiv.innerHTML = notificationHtml + notificationsDiv.innerHTML;
+        }
+
+        async function sendTestNotification() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert("Please connect first!");
+                return;
+            }
+
+            const userId = document.getElementById('userId').value;
+            const title = document.getElementById('title').value;
+            const body = document.getElementById('body').value;
+
+            try {
+                // Send via API endpoint
+                const response = await fetch('http://localhost:5001/api/SignalRNotification/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken ? `Bearer ${authToken}` : ''
+                    },
+                    body: JSON.stringify({
+                        userId: parseInt(userId),
+                        title: title,
+                        body: body,
+                        data: { testMessage: "This is test data" }
+                    })
+                });
+
+                const result = await response.json();
+                log(`API Response: ${JSON.stringify(result)}`);
+            } catch (err) {
+                log(`Failed to send notification: ${err}`);
+            }
+        }
+
+        function clearNotifications() {
+            document.getElementById('notifications').innerHTML = '';
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Auto-connect on page load if token is available
+        window.onload = function() {
+            log("Page loaded. Enter a JWT token and click Connect to start.");
+        };
+    </script>
+</body>
+</html>

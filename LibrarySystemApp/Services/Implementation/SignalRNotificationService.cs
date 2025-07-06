@@ -23,7 +23,15 @@ namespace LibrarySystemApp.Services.Implementation
             try
             {
                 var groupName = $"User_{userId}";
+                
+                // Add debugging to see if anyone is in the group
+                _logger.LogInformation($"Attempting to send SignalR notification to group '{groupName}' for user {userId}");
+                
                 await _hubContext.Clients.Group(groupName).SendAsync("ReceiveNotification", notification);
+                
+                // Also try sending to all connected clients for debugging
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", notification);
+                
                 _logger.LogInformation($"SignalR notification sent to user {userId}: {notification.Title}");
             }
             catch (Exception ex)

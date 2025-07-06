@@ -17,12 +17,31 @@ namespace LibrarySystemApp.Hubs
         public override async Task OnConnectedAsync()
         {
             var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userName = Context.User?.FindFirst(ClaimTypes.Name)?.Value;
+            
+            _logger.LogInformation($"SignalR connection attempt - User ID: {userId}, User Name: {userName}, Connection ID: {Context.ConnectionId}");
+            
             if (!string.IsNullOrEmpty(userId))
             {
                 // Add user to their personal group
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"User_{userId}");
-                _logger.LogInformation($"User {userId} connected to SignalR with connection ID: {Context.ConnectionId}");
+                var groupName = $"User_{userId}";
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+                _logger.LogInformation($"✅ User {userId} ({userName}) connected to SignalR and added to group '{groupName}' with connection ID: {Context.ConnectionId}");
             }
+            else
+            {
+                _logger.LogWarning($"❌ User connected to SignalR but no User ID found in claims. Connection ID: {Context.ConnectionId}");
+                
+                // Log all available claims for debugging
+                if (Context.User?.Claims != null)
+                {
+                    foreach (var claim in Context.User.Claims)
+                    {
+                        _logger.LogInformation($"Available claim: {claim.Type} = {claim.Value}");
+                    }
+                }
+            }
+            
             await base.OnConnectedAsync();
         }
 

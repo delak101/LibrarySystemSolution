@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FCI Library SignalR Test - dev.fci-library.live</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .notification {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .error {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            color: #a94442;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .connected {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .disconnected {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .connecting {
+            background-color: #d9edf7;
+            color: #31708f;
+        }
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 FCI Library SignalR Test Client</h1>
+    <h3>Testing: dev.fci-library.live</h3>
+    
+    <div class="container">
+        <h3>🔌 Connection Status</h3>
+        <div id="connectionStatus" class="status disconnected">Disconnected</div>
+        <button onclick="testServerConnectivity()">Test Server</button>
+        <button onclick="connect()" id="connectBtn">Connect SignalR</button>
+        <button onclick="disconnect()" id="disconnectBtn" disabled>Disconnect</button>
+    </div>
+
+    <div class="container">
+        <h3>🔑 Authentication</h3>
+        <input type="text" id="token" placeholder="Enter JWT Token (from /api/User/login)" />
+        <button onclick="setToken()">Set Token</button>
+        <button onclick="testLogin()">Get Test Token</button>
+        <div id="tokenStatus"></div>
+    </div>
+
+    <div class="container">
+        <h3>📤 Send Test Notification</h3>
+        <input type="number" id="userId" placeholder="User ID" value="1" />
+        <input type="text" id="title" placeholder="Notification Title" value="Test from Web Client" />
+        <textarea id="body" placeholder="Notification Body">This is a test SignalR notification from the web client!</textarea>
+        <button onclick="sendTestNotification()" id="sendBtn">Send Notification</button>
+        <button onclick="sendViaAPI()" id="apiBtn">Send via API</button>
+    </div>
+
+    <div class="container">
+        <h3>📨 Received Notifications</h3>
+        <div id="notifications"></div>
+        <button onclick="clearNotifications()">Clear Notifications</button>
+    </div>
+
+    <div class="container">
+        <h3>📋 Connection Log</h3>
+        <div id="log" class="log-container"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        let connection = null;
+        let authToken = null;
+        const SERVER_URL = 'https://dev.fci-library.live';
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logDiv.innerHTML += `<div style="color: ${color};">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateConnectionStatus(status, type = 'disconnected') {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.textContent = status;
+            statusDiv.className = `status ${type}`;
+            
+            // Update button states
+            document.getElementById('connectBtn').disabled = type === 'connected';
+            document.getElementById('disconnectBtn').disabled = type !== 'connected';
+        }
+
+        async function testServerConnectivity() {
+            log('🔍 Testing server connectivity...');
+            try {
+                const response = await fetch(`${SERVER_URL}/api/SignalRNotification/connection-test`);
+                const data = await response.json();
+                log(`✅ Server test successful: ${JSON.stringify(data)}`, 'success');
+                
+                // Test negotiation endpoint
+                const negResponse = await fetch(`${SERVER_URL}/notificationHub/negotiate`);
+                log(`✅ SignalR negotiate endpoint accessible (${negResponse.status})`, 'success');
+            } catch (error) {
+                log(`❌ Server connectivity failed: ${error.message}`, 'error');
+            }
+        }
+
+        function setToken() {
+            authToken = document.getElementById('token').value;
+            if (authToken) {
+                document.getElementById('tokenStatus').innerHTML = 
+                    '<div class="notification">✅ Token set successfully</div>';
+                log(`🔑 JWT Token set (length: ${authToken.length})`);
+            } else {
+                document.getElementById('tokenStatus').innerHTML = 
+                    '<div class="error">❌ No token provided</div>';
+            }
+        }
+
+        async function testLogin() {
+            log('🔐 Attempting test login...');
+            try {
+                const response = await fetch(`${SERVER_URL}/api/User/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: "test@example.com",
+                        password: "password123"
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.token) {
+                        document.getElementById('token').value = data.token;
+                        setToken();
+                        log('✅ Test login successful, token retrieved', 'success');
+                    }
+                } else {
+                    log(`❌ Login failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Login error: ${error.message}`, 'error');
+            }
+        }
+
+        async function connect() {
+            if (!authToken) {
+                alert("Please set a JWT token first!");
+                return;
+            }
+
+            try {
+                updateConnectionStatus('Connecting...', 'connecting');
+                log('🔄 Attempting SignalR connection...');
+
+                const options = {
+                    accessTokenFactory: () => authToken,
+                    transport: signalR.HttpTransportType.WebSockets
+                };
+
+                connection = new signalR.HubConnectionBuilder()
+                    .withUrl(`${SERVER_URL}/notificationHub`, options)
+                    .withAutomaticReconnect([0, 2000, 10000, 30000])
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+
+                // Set up event handlers
+                connection.on("ReceiveNotification", function (notification) {
+                    log(`📨 Received notification: ${notification.title}`, 'success');
+                    displayNotification(notification);
+                });
+
+                connection.on("JoinedGroup", function (groupName) {
+                    log(`👥 Joined group: ${groupName}`, 'success');
+                });
+
+                connection.on("LeftGroup", function (groupName) {
+                    log(`👋 Left group: ${groupName}`);
+                });
+
+                connection.on("NotificationMarkedAsRead", function (notificationId) {
+                    log(`✅ Notification ${notificationId} marked as read`);
+                });
+
+                // Connection state handlers
+                connection.onreconnecting((error) => {
+                    log(`🔄 Reconnecting: ${error}`, 'error');
+                    updateConnectionStatus("Reconnecting...", 'connecting');
+                });
+
+                connection.onreconnected((connectionId) => {
+                    log(`✅ Reconnected with ID: ${connectionId}`, 'success');
+                    updateConnectionStatus("Connected", 'connected');
+                });
+
+                connection.onclose((error) => {
+                    log(`❌ Connection closed: ${error}`, 'error');
+                    updateConnectionStatus("Disconnected", 'disconnected');
+                });
+
+                // Start connection
+                await connection.start();
+                log("✅ SignalR connected successfully!", 'success');
+                updateConnectionStatus("Connected", 'connected');
+
+            } catch (err) {
+                log(`❌ Connection failed: ${err}`, 'error');
+                updateConnectionStatus("Failed", 'disconnected');
+            }
+        }
+
+        async function disconnect() {
+            if (connection) {
+                await connection.stop();
+                log("👋 Disconnected from SignalR hub");
+                updateConnectionStatus("Disconnected", 'disconnected');
+            }
+        }
+
+        function displayNotification(notification) {
+            const notificationsDiv = document.getElementById('notifications');
+            const notificationHtml = `
+                <div class="notification">
+                    <strong>📢 ${notification.title}</strong><br>
+                    ${notification.body}<br>
+                    <small>Type: ${notification.type} | Time: ${new Date(notification.createdAt).toLocaleString()}</small>
+                    ${notification.data ? `<br><small>Data: ${JSON.stringify(notification.data)}</small>` : ''}
+                </div>
+            `;
+            notificationsDiv.innerHTML = notificationHtml + notificationsDiv.innerHTML;
+        }
+
+        async function sendTestNotification() {
+            if (!connection || connection.state !== signalR.HubConnectionState.Connected) {
+                alert("Please connect to SignalR first!");
+                return;
+            }
+
+            const userId = document.getElementById('userId').value;
+            const title = document.getElementById('title').value;
+            const body = document.getElementById('body').value;
+
+            try {
+                log(`📤 Sending test notification to user ${userId}...`);
+                // Note: This would require a hub method to send notifications
+                // For now, we'll use the API approach
+                await sendViaAPI();
+            } catch (err) {
+                log(`❌ Failed to send notification: ${err}`, 'error');
+            }
+        }
+
+        async function sendViaAPI() {
+            if (!authToken) {
+                alert("Please set a JWT token first!");
+                return;
+            }
+
+            const userId = document.getElementById('userId').value;
+            const title = document.getElementById('title').value;
+            const body = document.getElementById('body').value;
+
+            try {
+                log(`📤 Sending notification via API to user ${userId}...`);
+                const response = await fetch(`${SERVER_URL}/api/SignalRNotification/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        userId: parseInt(userId),
+                        title: title,
+                        body: body,
+                        data: { 
+                            testMessage: "This is test data from web client",
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    log(`✅ API Response: ${JSON.stringify(result)}`, 'success');
+                } else {
+                    log(`❌ API Error: ${JSON.stringify(result)}`, 'error');
+                }
+            } catch (err) {
+                log(`❌ Failed to send via API: ${err}`, 'error');
+            }
+        }
+
+        function clearNotifications() {
+            document.getElementById('notifications').innerHTML = '';
+            log('🧹 Notifications cleared');
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Auto-test connectivity on page load
+        window.onload = function() {
+            log('🌐 FCI Library SignalR Test Client loaded');
+            log('📍 Server: https://dev.fci-library.live');
+            log('💡 Steps: 1) Test Server 2) Get/Set Token 3) Connect SignalR 4) Send Test');
+            
+            // Auto-test server connectivity
+            setTimeout(testServerConnectivity, 1000);
+        };
+    </script>
+</body>
+</html>

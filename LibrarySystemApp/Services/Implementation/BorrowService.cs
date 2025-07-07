@@ -13,14 +13,14 @@ namespace LibrarySystemApp.Services
         private readonly IUserRepository _userRepository;
         private readonly IBookRepository _bookRepository;
         private readonly LibraryContext _context;
-        private readonly ICombinedNotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
         public BorrowService(
             IBorrowRepository borrowRepository,
             IUserRepository userRepository,
             IBookRepository bookRepository,
             LibraryContext context,
-            ICombinedNotificationService notificationService)
+            INotificationService notificationService)
         {
             _borrowRepository = borrowRepository;
             _userRepository = userRepository;

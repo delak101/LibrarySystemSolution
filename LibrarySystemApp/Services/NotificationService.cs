@@ -168,6 +168,24 @@ namespace LibrarySystemApp.Services
             );
         }
 
+        public async Task<bool> SendBorrowConfirmationAsync(int userId, string bookTitle, DateTime dueDate)
+        {
+            var title = "Book Borrowed Successfully";
+            var body = $"You have successfully borrowed '{bookTitle}'. Due date: {dueDate:MMM dd, yyyy}";
+            var data = new { BookTitle = bookTitle, DueDate = dueDate };
+            
+            return await SendNotificationAsync(userId, title, body, data);
+        }
+
+        public async Task<bool> SendReturnConfirmationAsync(int userId, string bookTitle)
+        {
+            var title = "Book Returned Successfully";
+            var body = $"You have successfully returned '{bookTitle}'. Thank you!";
+            var data = new { BookTitle = bookTitle };
+            
+            return await SendNotificationAsync(userId, title, body, data);
+        }
+
         private async Task<bool> SendFirebaseNotificationAsync(List<string> deviceTokens, string title, string body, object? data)
         {
             try

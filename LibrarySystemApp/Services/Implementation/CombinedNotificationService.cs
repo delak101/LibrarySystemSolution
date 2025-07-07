@@ -1,16 +1,17 @@
 using LibrarySystemApp.Services.Interfaces;
+using LibrarySystemApp.Services;
 using LibrarySystemApp.DTOs;
 
 namespace LibrarySystemApp.Services.Implementation
 {
-    public class CombinedNotificationService : ICombinedNotificationService
+    public class CombinedNotificationService : INotificationService
     {
-        private readonly INotificationService _pushNotificationService;
+        private readonly NotificationService _pushNotificationService;
         private readonly ISignalRNotificationService _signalRNotificationService;
         private readonly ILogger<CombinedNotificationService> _logger;
 
         public CombinedNotificationService(
-            INotificationService pushNotificationService,
+            NotificationService pushNotificationService,
             ISignalRNotificationService signalRNotificationService,
             ILogger<CombinedNotificationService> logger)
         {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using LibrarySystemApp.Services.Interfaces;
+using LibrarySystemApp.Services;
 using LibrarySystemApp.DTOs;
 using System.Security.Claims;
 
@@ -12,12 +13,12 @@ namespace LibrarySystemApp.Controllers
     public class SignalRNotificationController : ControllerBase
     {
         private readonly ISignalRNotificationService _signalRNotificationService;
-        private readonly ICombinedNotificationService _combinedNotificationService;
+        private readonly INotificationService _combinedNotificationService;
         private readonly ILogger<SignalRNotificationController> _logger;
 
         public SignalRNotificationController(
             ISignalRNotificationService signalRNotificationService,
-            ICombinedNotificationService combinedNotificationService,
+            INotificationService combinedNotificationService,
             ILogger<SignalRNotificationController> logger)
         {
             _signalRNotificationService = signalRNotificationService;

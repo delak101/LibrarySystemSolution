@@ -9,5 +9,7 @@ namespace LibrarySystemApp.Services
         Task<bool> SendBookDueReminderAsync(int userId, string bookTitle, DateTime dueDate);
         Task<bool> SendOverdueNotificationAsync(int userId, string bookTitle);
         Task<bool> SendBookAvailableNotificationAsync(int userId, string bookTitle);
+        Task<bool> SendBorrowConfirmationAsync(int userId, string bookTitle, DateTime dueDate);
+        Task<bool> SendReturnConfirmationAsync(int userId, string bookTitle);
     }
 }

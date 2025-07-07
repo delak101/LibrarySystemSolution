@@ -125,12 +125,12 @@ builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IEmailService, SendGridEmailService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationService, CombinedNotificationService>();
+builder.Services.AddScoped<NotificationService>(); // Keep the original as a dependency
 builder.Services.AddScoped<ISignalRNotificationService, SignalRNotificationService>();
-builder.Services.AddScoped<ICombinedNotificationService, CombinedNotificationService>();
 builder.Services.AddHttpClient(); // For Firebase HTTP requests
-// Uncomment the line below to enable automatic notification reminders
-// builder.Services.AddHostedService<NotificationBackgroundService>();
+// Enable automatic notification reminders for due date notifications
+builder.Services.AddHostedService<NotificationBackgroundService>();
 
 builder.Logging.AddConsole();
 

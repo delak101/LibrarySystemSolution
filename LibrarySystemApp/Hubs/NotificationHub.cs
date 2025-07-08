@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace LibrarySystemApp.Hubs
 {
-    [Authorize]
+    // [Authorize]
     public class NotificationHub : Hub
     {
         private readonly ILogger<NotificationHub> _logger;

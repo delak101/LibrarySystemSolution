@@ -4,6 +4,7 @@ using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
 using LibrarySystemApp.Repositories.Interfaces;
 using LibrarySystemApp.Services.Interfaces;
+using LibrarySystemApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystemApp.Services.Implementation;
@@ -13,7 +14,8 @@ public class UserService(
     ITokenService _tokenService,
     LibraryContext _context,
     IEmailService _emailService,
-    IConfiguration _configuration
+    IConfiguration _configuration,
+    INotificationService _notificationService
 ) : IUserService
 {
     public async Task<bool> RegisterAsync(RegisterDto registerDto)
@@ -37,7 +39,6 @@ public class UserService(
             Email = email,
             StudentEmail = registerDto.studentEmail,
             PasswordHash = hashPassword,
-            // Role = "Admin",
             NationalId = registerDto.nationalId,
             Department = registerDto.department,
             Phone = registerDto.phone,
@@ -71,6 +72,10 @@ public class UserService(
         var isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
         if (!isPasswordValid)
             throw new UnauthorizedAccessException("Invalid password.");
+
+        // Check if user is approved (except for Admin users)
+        if (user.Role != "Admin" && !user.IsApproved)
+            throw new UnauthorizedAccessException("Account is pending approval. Please wait for admin approval.");
 
         var token = _tokenService.CreateToken(user);
 
@@ -245,6 +250,87 @@ public class UserService(
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<List<UserDto>> GetPendingUsersAsync()
+    {
+        var pendingUsers = await _context.Users
+            .Where(u => !u.IsApproved && u.Role != "Admin")
+            .Select(u => new UserDto
+            {
+                Id = u.Id,
+                ProfilePicture = u.ProfilePicture,
+                Name = u.Name,
+                Email = u.Email,
+                StudentEmail = u.StudentEmail,
+                NationalId = u.NationalId,
+                Role = u.Role,
+                Phone = u.Phone,
+                Department = u.Department,
+                Year = u.Year,
+                TermsAccepted = u.TermsAccepted,
+                IsApproved = u.IsApproved,
+                ApprovedAt = u.ApprovedAt
+            })
+            .ToListAsync();
+
+        return pendingUsers;
+    }
+
+    public async Task<bool> ApproveUserAsync(int userId, int approvedBy)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return false;
+
+        user.IsApproved = true;
+        user.ApprovedAt = DateTime.UtcNow;
+        user.ApprovedBy = approvedBy;
+
+        await _context.SaveChangesAsync();
+
+        // Send approval notification
+        try
+        {
+            await _notificationService.SendUserApprovalNotificationAsync(userId, user.Name);
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't fail the approval process
+            // You might want to inject ILogger here for proper logging
+            Console.WriteLine($"Failed to send approval notification: {ex.Message}");
+        }
+
+        return true;
+    }
+
+    public async Task<bool> RejectUserAsync(int userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return false;
+
+        // Send rejection notification before deleting
+        try
+        {
+            await _notificationService.SendUserRejectionNotificationAsync(userId, user.Name);
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't fail the rejection process
+            Console.WriteLine($"Failed to send rejection notification: {ex.Message}");
+        }
+
+        // Instead of deleting, we could mark as rejected
+        // For now, we'll delete the user
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> GetUserApprovalStatusAsync(int userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        return user?.IsApproved ?? false;
+    }
+
     private static UserDto MapToResponseDto(User? user)
     {
         if (user == null) return null!;
@@ -260,7 +346,9 @@ public class UserService(
             Phone = user.Phone,
             Department = user.Department,
             Year = user.Year,
-            TermsAccepted = user.TermsAccepted
+            TermsAccepted = user.TermsAccepted,
+            IsApproved = user.IsApproved,
+            ApprovedAt = user.ApprovedAt
         };
     }
 }

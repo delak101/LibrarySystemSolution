@@ -170,5 +170,15 @@ namespace LibrarySystemApp.Services.Implementation
         {
             return await _pushNotificationService.RemoveDeviceTokenAsync(deviceToken);
         }
+
+        public async Task<bool> SendUserApprovalNotificationAsync(int userId, string userName)
+        {
+            return await _pushNotificationService.SendUserApprovalNotificationAsync(userId, userName);
+        }
+
+        public async Task<bool> SendUserRejectionNotificationAsync(int userId, string userName)
+        {
+            return await _pushNotificationService.SendUserRejectionNotificationAsync(userId, userName);
+        }
     }
 }

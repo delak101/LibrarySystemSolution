@@ -37,6 +37,10 @@ namespace LibrarySystemApp.Models
         
         public required bool TermsAccepted { get; set; }
         
+        public bool IsApproved { get; set; } = false; // Default to false, requires admin approval
+        public DateTime? ApprovedAt { get; set; }
+        public int? ApprovedBy { get; set; } // Admin user ID who approved
+        
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetTokenExpiry { get; set; }
 

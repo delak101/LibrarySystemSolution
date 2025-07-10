@@ -13,4 +13,6 @@ public class UserDto
     public required string Department { get; set; }   // e.g., "IT", "CS", "IS"
     public required int Year { get; set; }  // e.g., 1, 2, 3, 4
     public required bool TermsAccepted { get; set; }
+    public bool IsApproved { get; set; } = false;
+    public DateTime? ApprovedAt { get; set; }
 }

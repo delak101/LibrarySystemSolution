@@ -186,6 +186,24 @@ namespace LibrarySystemApp.Services
             return await SendNotificationAsync(userId, title, body, data);
         }
 
+        public async Task<bool> SendUserApprovalNotificationAsync(int userId, string userName)
+        {
+            var title = "Account Approved";
+            var body = $"Congratulations {userName}! Your account has been approved by the admin. You can now log in and start using the library system.";
+            var data = new { type = "account_approved", userName };
+            
+            return await SendNotificationAsync(userId, title, body, data);
+        }
+
+        public async Task<bool> SendUserRejectionNotificationAsync(int userId, string userName)
+        {
+            var title = "Account Registration Rejected";
+            var body = $"Hello {userName}, unfortunately your account registration has been rejected. Please contact the library administration for more information.";
+            var data = new { type = "account_rejected", userName };
+            
+            return await SendNotificationAsync(userId, title, body, data);
+        }
+
         private async Task<bool> SendFirebaseNotificationAsync(List<string> deviceTokens, string title, string body, object? data)
         {
             try

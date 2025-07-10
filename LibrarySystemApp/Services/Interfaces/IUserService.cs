@@ -42,5 +42,11 @@ public interface IUserService
 
     Task<bool> ResetPassword(string token, string newPassword);
 
+    // User approval methods
+    Task<List<UserDto>> GetPendingUsersAsync();
+    Task<bool> ApproveUserAsync(int userId, int approvedBy);
+    Task<bool> RejectUserAsync(int userId);
+    Task<bool> GetUserApprovalStatusAsync(int userId);
+
 
 }

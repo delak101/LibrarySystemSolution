@@ -3,6 +3,7 @@ using LibrarySystemApp.Interfaces;
 using LibrarySystemApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibrarySystemApp.Controllers;
 
@@ -210,5 +211,82 @@ public class UserController(IUserService _userService)
         }
 
         return Ok("Password reset successful");
+    }
+
+    // User approval endpoints
+    [HttpGet("pending")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetPendingUsers()
+    {
+        try
+        {
+            var pendingUsers = await _userService.GetPendingUsersAsync();
+            return Ok(pendingUsers);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
+        }
+    }
+
+    [HttpPost("approve/{userId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ApproveUser(int userId)
+    {
+        try
+        {
+            var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (adminIdClaim == null || !int.TryParse(adminIdClaim, out int adminId))
+            {
+                return Unauthorized("Invalid admin token");
+            }
+
+            var result = await _userService.ApproveUserAsync(userId, adminId);
+            if (!result)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(new { Message = "User approved successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
+        }
+    }
+
+    [HttpPost("reject/{userId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> RejectUser(int userId)
+    {
+        try
+        {
+            var result = await _userService.RejectUserAsync(userId);
+            if (!result)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(new { Message = "User rejected and removed successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
+        }
+    }
+
+    [HttpGet("approval-status/{userId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUserApprovalStatus(int userId)
+    {
+        try
+        {
+            var isApproved = await _userService.GetUserApprovalStatusAsync(userId);
+            return Ok(new { UserId = userId, IsApproved = isApproved });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
+        }
     }
 }

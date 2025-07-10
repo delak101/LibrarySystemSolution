@@ -39,6 +39,81 @@ Authorization: Bearer <your_token>
 - **404 Not Found**: You're using wrong endpoint
 - **500 Internal Server Error**: Server down
 
+**Note:** New user accounts require admin approval before they can log in.
+
+---
+
+## User Approval System
+
+### Get Pending Users (Admin Only)
+**GET** `/api/user/pending`
+#### Headers:
+```
+Authorization: Bearer <admin_token>
+```
+#### Response:
+- **200 OK**: Returns array of pending users
+```json
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "email": "johndoe@example.com",
+        "studentEmail": "johndoe@fci.zu.edu",
+        "department": "IT",
+        "phone": "0123456789",
+        "year": 2,
+        "isApproved": false,
+        "approvedAt": null
+    }
+]
+```
+- **401 Unauthorized**: Invalid or missing admin token
+- **403 Forbidden**: Not an admin user
+
+---
+
+### Approve User (Admin Only)
+**POST** `/api/user/approve/{userId}`
+#### Headers:
+```
+Authorization: Bearer <admin_token>
+```
+#### Response:
+- **200 OK**: `{ "message": "User approved successfully" }`
+- **401 Unauthorized**: Invalid or missing admin token
+- **403 Forbidden**: Not an admin user
+- **404 Not Found**: User not found
+
+---
+
+### Reject User (Admin Only)
+**POST** `/api/user/reject/{userId}`
+#### Headers:
+```
+Authorization: Bearer <admin_token>
+```
+#### Response:
+- **200 OK**: `{ "message": "User rejected and removed successfully" }`
+- **401 Unauthorized**: Invalid or missing admin token
+- **403 Forbidden**: Not an admin user
+- **404 Not Found**: User not found
+
+**Note:** Rejecting a user will delete their account from the system.
+
+---
+
+### Get User Approval Status (Admin Only)
+**GET** `/api/user/approval-status/{userId}`
+#### Headers:
+```
+Authorization: Bearer <admin_token>
+```
+#### Response:
+- **200 OK**: `{ "userId": 1, "isApproved": true }`
+- **401 Unauthorized**: Invalid or missing admin token
+- **403 Forbidden**: Not an admin user
+
 ---
 
 ### Login User
@@ -55,6 +130,9 @@ Authorization: Bearer <your_token>
 - **400 Bad Request**:
   - `{ "message": "User does not exist." }`
   - `{ "message": "Invalid password." }`
+  - `{ "message": "Account is pending approval. Please wait for admin approval." }`
+
+**Note:** Regular users (non-admin) must be approved by an admin before they can log in.
 
 ---
 

@@ -21,11 +21,23 @@ public class UserService(
     public async Task<bool> RegisterAsync(RegisterDto registerDto)
     {
         var email = registerDto.email.ToLower();
+        var studentEmail = registerDto.studentEmail?.ToLower();
 
-        // Check if a user already exists
+        // Check if a user already exists with the same regular email
         if (await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(false) != null)
         {
-            return false; // User already exists
+            return false; // User already exists with this email
+        }
+
+        // Check if a user already exists with the same student email (if provided)
+        if (!string.IsNullOrEmpty(studentEmail))
+        {
+            var existingUserWithStudentEmail = await _context.Users
+                .AnyAsync(u => u.StudentEmail != null && u.StudentEmail.ToLower() == studentEmail);
+            if (existingUserWithStudentEmail)
+            {
+                return false; // User already exists with this student email
+            }
         }
 
         // Hash password using the salt
@@ -65,7 +77,8 @@ public class UserService(
 
     public async Task<UserResponseDto> LoginAsync(LoginDto loginDto)
     {
-        var user = await _userRepository.GetUserByEmailAsync(loginDto.Email.ToLower());
+        // Try to find user by either regular email or student email
+        var user = await _userRepository.GetUserByEmailOrStudentEmailAsync(loginDto.Email.ToLower());
         if (user == null)
             throw new UnauthorizedAccessException("User does not exist.");
 
@@ -95,8 +108,8 @@ public class UserService(
 
     public async Task<List<UserDto>> GetAllUsersAsync()
     {
-        var users = await _userRepository.GetAllUsersAsync();
-        return users.Select(MapToResponseDto).ToList();
+        var users = await _userRepository.GetAllApprovedUsersAsync();
+        return users.Where(u => u != null).Select(MapToResponseDto).ToList();
     }
 
     public async Task<UserDto> GetUserProfileAsync(int userId)
@@ -194,7 +207,9 @@ public class UserService(
 
 
     public async Task<bool> InitiatePasswordReset(string email)
-    {        var user = await _userRepository.GetUserByEmailAsync(email);
+    {        
+        // Try to find user by either regular email or student email
+        var user = await _userRepository.GetUserByEmailOrStudentEmailAsync(email);
         if (user == null) return false;
 
         // Generate a 6-digit numeric token

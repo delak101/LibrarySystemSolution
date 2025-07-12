@@ -6,11 +6,20 @@ public interface IUserRepository
 {
     Task<List<User?>> GetAllUsersAsync();
     
+    // Retrieves all approved users (students)
+    Task<List<User?>> GetAllApprovedUsersAsync();
+    
     // Retrieves a user by their ID
     Task<User?> GetUserByIdAsync(int userId);
     
     // Retrieves a user by their email (useful for login and checking uniqueness)
     Task<User?> GetUserByEmailAsync(string email);
+
+    // Retrieves a user by either email or student email (useful for flexible login)
+    Task<User?> GetUserByEmailOrStudentEmailAsync(string email);
+
+    // Check if user exists by either email or student email (useful for registration validation)
+    Task<bool> UserExistsByEmailOrStudentEmailAsync(string email);
 
     Task<List<User?>> GetUserByNameAsync(string name);
     

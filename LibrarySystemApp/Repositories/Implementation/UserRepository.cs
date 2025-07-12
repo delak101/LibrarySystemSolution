@@ -12,6 +12,10 @@ namespace LibrarySystemApp.Repositories.Implementation
         public async Task<List<User?>> GetAllUsersAsync() => 
         await _context.Users.ToListAsync();
 
+        // Retrieve all approved users (students)
+        public async Task<List<User?>> GetAllApprovedUsersAsync() => 
+            await _context.Users.Where(u => u.IsApproved).ToListAsync();
+
         // Retrieve user by ID
         public async Task<User?> GetUserByIdAsync(int userId) => 
         await _context.Users.FindAsync(userId);
@@ -21,6 +25,18 @@ namespace LibrarySystemApp.Repositories.Implementation
             await _context.Users
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     
+        // Retrieve user by email or student email
+        public async Task<User?> GetUserByEmailOrStudentEmailAsync(string email) =>
+            await _context.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() || 
+                                         (u.StudentEmail != null && u.StudentEmail.ToLower() == email.ToLower()));
+
+        // Check if user exists by either email or student email
+        public async Task<bool> UserExistsByEmailOrStudentEmailAsync(string email) =>
+            await _context.Users
+                .AnyAsync(u => u.Email.ToLower() == email.ToLower() || 
+                              (u.StudentEmail != null && u.StudentEmail.ToLower() == email.ToLower()));
+
         public async Task<List<User?>> GetUserByNameAsync(string name) =>
             await _context.Users
                 .Where(u => u.Name.ToLower().Contains(name.ToLower()))
@@ -87,39 +103,128 @@ namespace LibrarySystemApp.Repositories.Implementation
         // Delete user by ID
         public async Task DeleteUserAsync(int userId)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    throw new InvalidOperationException("User not found.");
+                }
+
+                // Delete related records first to avoid foreign key constraint violations
+                
+                // Delete user's favorites
+                var favorites = await _context.Favorites.Where(f => f.UserId == userId).ToListAsync();
+                _context.Favorites.RemoveRange(favorites);
+                
+                // Delete user's reviews
+                var reviews = await _context.Reviews.Where(r => r.UserId == userId).ToListAsync();
+                _context.Reviews.RemoveRange(reviews);
+                
+                // Delete user's borrow records
+                var borrows = await _context.Borrows.Where(b => b.UserId == userId).ToListAsync();
+                _context.Borrows.RemoveRange(borrows);
+                
+                // Delete user's device tokens (should cascade automatically, but let's be explicit)
+                var deviceTokens = await _context.UserDeviceTokens.Where(dt => dt.UserId == userId).ToListAsync();
+                _context.UserDeviceTokens.RemoveRange(deviceTokens);
+                
+                // Finally, delete the user
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
+                
+                await transaction.CommitAsync();
             }
-            else
+            catch
             {
-                throw new InvalidOperationException("User not found.");
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 
         // Delete user by email
         public async Task DeleteUserByEmailAsync(string email)
         {
-            var user = await GetUserByEmailAsync(email);
-            if (user != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
+                var user = await GetUserByEmailAsync(email);
+                if (user == null)
+                {
+                    throw new InvalidOperationException("User not found.");
+                }
+
+                // Delete related records first to avoid foreign key constraint violations
+                
+                // Delete user's favorites
+                var favorites = await _context.Favorites.Where(f => f.UserId == user.Id).ToListAsync();
+                _context.Favorites.RemoveRange(favorites);
+                
+                // Delete user's reviews
+                var reviews = await _context.Reviews.Where(r => r.UserId == user.Id).ToListAsync();
+                _context.Reviews.RemoveRange(reviews);
+                
+                // Delete user's borrow records
+                var borrows = await _context.Borrows.Where(b => b.UserId == user.Id).ToListAsync();
+                _context.Borrows.RemoveRange(borrows);
+                
+                // Delete user's device tokens (should cascade automatically, but let's be explicit)
+                var deviceTokens = await _context.UserDeviceTokens.Where(dt => dt.UserId == user.Id).ToListAsync();
+                _context.UserDeviceTokens.RemoveRange(deviceTokens);
+                
+                // Finally, delete the user
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
+                
+                await transaction.CommitAsync();
             }
-            else
+            catch
             {
-                throw new InvalidOperationException("User not found.");
+                await transaction.RollbackAsync();
+                throw;
             }
         }
         public async Task<int> DeleteUsersByYearAsync(int year)
         {
-            var usersToDelete = await _context.Users.Where(u => u.Year == year).ToListAsync();
-            if (!usersToDelete.Any()) return 0;
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var usersToDelete = await _context.Users.Where(u => u.Year == year).ToListAsync();
+                if (!usersToDelete.Any()) return 0;
 
-            _context.Users.RemoveRange(usersToDelete);
-            return await _context.SaveChangesAsync();
+                var userIds = usersToDelete.Select(u => u.Id).ToList();
+
+                // Delete related records first to avoid foreign key constraint violations
+                
+                // Delete favorites for all users
+                var favorites = await _context.Favorites.Where(f => userIds.Contains(f.UserId)).ToListAsync();
+                _context.Favorites.RemoveRange(favorites);
+                
+                // Delete reviews for all users
+                var reviews = await _context.Reviews.Where(r => userIds.Contains(r.UserId)).ToListAsync();
+                _context.Reviews.RemoveRange(reviews);
+                
+                // Delete borrow records for all users
+                var borrows = await _context.Borrows.Where(b => userIds.Contains(b.UserId)).ToListAsync();
+                _context.Borrows.RemoveRange(borrows);
+                
+                // Delete device tokens for all users
+                var deviceTokens = await _context.UserDeviceTokens.Where(dt => userIds.Contains(dt.UserId)).ToListAsync();
+                _context.UserDeviceTokens.RemoveRange(deviceTokens);
+                
+                // Finally, delete the users
+                _context.Users.RemoveRange(usersToDelete);
+                var result = await _context.SaveChangesAsync();
+                
+                await transaction.CommitAsync();
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
